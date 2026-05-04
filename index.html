@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr Brook — Barber Shop & SPA · Guayaquil</title>
+  <meta name="description" content="La mejor barbería del Ecuador. Cortes, color, ondas, Hair SPA, facial, uñas y coffee. Dos sedes en Guayaquil: Urdesa y La Joya." />
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BarberShop",
+        "name": "Mr Brook Barber Shop & SPA — Urdesa",
+        "image": "assets/logos/logo-02.png",
+        "url": "https://linktr.ee/MrBrook.bs",
+        "telephone": "+593969012964",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Av. Victor Emilio Estrada 1116",
+          "addressLocality": "Guayaquil",
+          "addressCountry": "EC"
+        },
+        "openingHours": ["Mo-Sa 10:00-19:45", "Su 10:00-17:30"],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5.0",
+          "reviewCount": "187"
+        },
+        "sameAs": ["https://www.instagram.com/mrbrook.bs/", "https://www.tiktok.com/@mrbrook.bs"]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.45/bundled/lenis.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0B0B0D; --dark: #111214; --dark2: #1B1D21; --smoke: #2B2D31;
+      --white: #FFFFFF; --gold: #8A6A4B; --gold-light: #C8B08A;
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'DM Sans', sans-serif;
+      --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    html { scroll-behavior: auto; }
+    body {
+      background: var(--black); color: var(--white);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { font-family: var(--sans); border: none; cursor: pointer; }
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+
+    /* CURSOR */
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      a, button, .interactive { cursor: none !important; }
+    }
+    #cursor-dot {
+      position: fixed; width: 6px; height: 6px;
+      background: var(--gold-light); border-radius: 50%;
+      top: 0; left: 0; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid rgba(200,176,138,0.5); border-radius: 50%;
+      top: 0; left: 0; pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out), border-color 0.3s, background 0.3s;
+    }
+    body.cursor-hover #cursor-dot { width: 12px; height: 12px; }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: var(--gold-light); background: rgba(200,176,138,0.05); }
+    body.cursor-text #cursor-dot { width: 2px; height: 28px; border-radius: 1px; }
+    body.cursor-text #cursor-ring { opacity: 0; }
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+
+    /* NOISE GRAIN */
+    .noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9000;
+      opacity: 0.04; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+
+    /* PROGRESS */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(to right, var(--gold), var(--gold-light));
+      z-index: 9991; transform-origin: left; transform: scaleX(0);
+    }
+
+    /* LOADER */
+    #loader {
+      position: fixed; inset: 0; z-index: 9995; background: var(--black);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    }
+    #loader img { width: 56px; height: 56px; filter: brightness(10); opacity: 0; }
+    #loader .ld-text { font-family: var(--serif); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.4); opacity: 0; }
+    #loader .ld-bar { width: 140px; height: 1px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+    #loader .ld-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 0; background: var(--gold-light); }
+
+    /* NAV */
+    #nav {
+      position: fixed; top: 20px; left: 50%; z-index: 1000;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(11,11,13,0.55);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 100px; padding: 8px 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+      white-space: nowrap;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; margin-right: 4px; }
+    .nav-logo img { width: 26px; height: 26px; filter: brightness(10); }
+    .nav-logo span { font-family: var(--serif); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; color: #fff; }
+    .nav-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 4px; }
+    .nav-link { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.55); padding: 6px 14px; border-radius: 100px; transition: color 0.2s, background 0.2s; }
+    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.07); }
+    .nav-social { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: rgba(255,255,255,0.55); transition: color 0.2s, background 0.2s; }
+    .nav-social:hover { color: var(--gold-light); background: rgba(200,176,138,0.1); }
+    .btn-nav {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--gold); color: #fff;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      padding: 8px 18px; border-radius: 100px;
+      transition: background 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-nav:hover { background: #9E7A58; }
+
+    /* BUTTONS */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold); color: #fff;
+      font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      padding: 14px 28px; border-radius: 100px;
+      transition: background 0.2s, box-shadow 0.3s;
+      box-shadow: 0 2px 8px rgba(138,106,75,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+      position: relative; overflow: hidden; white-space: nowrap;
+      will-change: transform;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+      transform: translateX(-100%); transition: transform 0.6s var(--ease-out);
+    }
+    .btn-primary:hover { background: #9E7A58; box-shadow: 0 8px 24px rgba(138,106,75,0.4); }
+    .btn-primary:hover::before { transform: translateX(100%); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: rgba(255,255,255,0.7);
+      font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
+      padding: 14px 28px; border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.18);
+      transition: all 0.25s; white-space: nowrap;
+    }
+    .btn-ghost:hover { border-color: rgba(200,176,138,0.5); color: var(--gold-light); background: rgba(200,176,138,0.05); }
+
+    /* SECTION COMMON */
+    .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .section-label::before { content: ''; width: 20px; height: 1px; background: var(--gold); flex-shrink: 0; }
+    .section-label span { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); }
+    .section-title {
+      font-family: var(--serif); font-size: clamp(36px, 5vw, 62px);
+      font-weight: 600; line-height: 1.02; letter-spacing: -0.02em; color: #fff;
+    }
+    .section-title em { color: var(--gold-light); font-style: italic; }
+    .reveal-line { display: inline-block; overflow: hidden; }
+    .reveal-line > span { display: inline-block; transform: translateY(110%); }
+
+    /* HERO */
+    #hero {
+      position: relative; width: 100%; height: 100vh; min-height: 640px;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: var(--black);
+    }
+    #hero-video {
+      position: absolute; inset: 0; width: 100%; height: 110%;
+      object-fit: cover; opacity: 0.45; z-index: 0; top: -5%;
+    }
+    .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(11,11,13,0.55) 0%, rgba(11,11,13,0.15) 40%, rgba(11,11,13,0.9) 100%); }
+    .hero-grain { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.4; background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,13,0.6) 100%); }
+    .hero-content { position: relative; z-index: 5; text-align: center; padding: 0 24px; max-width: 920px; width: 100%; }
+    .hero-logo { width: 64px; height: 64px; filter: brightness(10) drop-shadow(0 0 24px rgba(200,176,138,0.4)); margin: 0 auto 22px; opacity: 0; }
+    .hero-kicker { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 22px; opacity: 0; }
+    .hero-h1 { font-family: var(--serif); font-size: clamp(54px, 9vw, 110px); font-weight: 600; line-height: 0.92; letter-spacing: -0.025em; color: #fff; margin-bottom: 30px; }
+    .hero-h1 em { color: var(--gold-light); font-style: italic; }
+    .hero-sub { font-size: clamp(14px, 1.7vw, 17px); color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 38px; line-height: 1.6; opacity: 0; }
+    .hero-ctas { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; opacity: 0; }
+    .hero-stats { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 56px; opacity: 0; }
+    .hero-stat { padding: 14px 26px; border-left: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .hero-stat:first-child { border-left: none; }
+    .hero-stat-val { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--gold-light); }
+    .hero-stat-lbl { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-top: 3px; }
+    .scroll-line { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 5; }
+    .scroll-line-bar { width: 1px; height: 44px; background: linear-gradient(to bottom, rgba(200,176,138,0.5), transparent); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    /* MARQUEE */
+    .marquee-section { background: var(--black); padding: 60px 0 50px; overflow: hidden; }
+    .marquee-row { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
+    .marquee-row + .marquee-row { margin-top: 14px; }
+    .marquee-track { display: flex; width: max-content; gap: 14px; }
+    .marquee-track-a { animation: mqL 50s linear infinite; }
+    .marquee-track-b { animation: mqR 60s linear infinite; }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes mqL { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    @keyframes mqR { from{transform:translateX(-50%)} to{transform:translateX(0)} }
+    .marquee-item { flex-shrink: 0; width: 188px; height: 260px; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid rgba(138,106,75,0.1); transition: transform 0.5s var(--ease-out); }
+    .marquee-item:hover { transform: scale(1.03) rotate(-1deg); border-color: rgba(200,176,138,0.4); }
+    .marquee-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .marquee-item:hover img { transform: scale(1.08); }
+    .marquee-item-label { position: absolute; bottom: 10px; left: 12px; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+
+    /* STATS */
+    .stats-section { background: var(--dark2); border-top: 1px solid rgba(138,106,75,0.1); border-bottom: 1px solid rgba(138,106,75,0.1); padding: 56px 40px; }
+    .stats-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+    .stat-item { text-align: center; flex: 1; min-width: 120px; }
+    .stat-val { font-family: var(--serif); font-size: clamp(36px, 4vw, 56px); font-weight: 600; color: var(--gold-light); line-height: 1; display: block; }
+    .stat-suffix { font-size: 0.55em; color: rgba(200,176,138,0.6); }
+    .stat-lbl { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-top: 8px; }
+    .stat-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.07); }
+
+    /* QUOTE */
+    .quote-section { background: var(--dark2); padding: 110px 40px; }
+    .quote-inner { max-width: 920px; margin: 0 auto; }
+    .quote-icon { color: var(--gold); margin-bottom: 30px; }
+    .quote-text { font-family: var(--serif); font-size: clamp(34px, 5vw, 60px); font-weight: 500; color: #fff; line-height: 1.12; letter-spacing: -0.02em; font-style: italic; margin-bottom: 28px; }
+    .q-word { display: inline-block; opacity: 0.15; transition: opacity 0.4s ease; }
+    .q-word.gold { color: var(--gold-light); }
+    .quote-byline { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-bottom: 44px; }
+    .quote-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-light); border: 1px solid rgba(200,176,138,0.25); border-radius: 100px; padding: 8px 18px; transition: all 0.25s; }
+    .badge:hover { background: rgba(200,176,138,0.1); border-color: var(--gold-light); transform: translateY(-2px); }
+
+    /* CONCEPT (3D shop renders) */
+    .concept-section { background: var(--black); padding: 110px 40px; position: relative; overflow: hidden; border-top: 1px solid rgba(138,106,75,0.08); }
+    .concept-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.1fr; gap: 60px; align-items: center; position: relative; z-index: 1; }
+    .concept-text { max-width: 460px; }
+    .concept-text h2 { margin-bottom: 26px; }
+    .concept-text p { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.55); margin-bottom: 16px; }
+    .concept-stats { display: flex; gap: 28px; margin-top: 32px; flex-wrap: wrap; }
+    .concept-stat { border-left: 2px solid var(--gold); padding-left: 14px; }
+    .concept-stat-val { font-family: var(--serif); font-size: 28px; font-weight: 600; color: var(--gold-light); line-height: 1; }
+    .concept-stat-lbl { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 5px; }
+    .concept-visual { position: relative; aspect-ratio: 1/1; max-height: 600px; perspective: 1400px; }
+    .concept-render { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; }
+    .concept-render img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 40px 80px rgba(0,0,0,0.6)) drop-shadow(0 0 60px rgba(200,176,138,0.08)); }
+    .concept-render-bg { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(200,176,138,0.08), transparent 70%); pointer-events: none; }
+    .concept-render-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(200,176,138,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,176,138,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%); mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%); }
+    .concept-secondary { position: absolute; bottom: -20px; right: -40px; width: 200px; opacity: 0.5; transform: rotate(8deg); }
+    .concept-secondary img { width: 100%; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); }
+
+    /* LOCATIONS */
+    .locations-section { background: var(--black); padding: 110px 40px; }
+    .locations-inner { max-width: 1120px; margin: 0 auto; }
+    .locations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 22px; margin-top: 56px; perspective: 1500px; }
+    .location-card {
+      background: var(--dark); border-radius: 28px; overflow: hidden;
+      border: 1px solid rgba(138,106,75,0.16);
+      transform-style: preserve-3d; will-change: transform;
+      transition: border-color 0.3s, box-shadow 0.4s;
+    }
+    .location-card:hover { border-color: rgba(200,176,138,0.4); box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
+    .lc-image { height: 260px; overflow: hidden; position: relative; }
+    .lc-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+    .location-card:hover .lc-image img { transform: scale(1.06); }
+    .lc-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(17,18,20,0.95) 100%); }
+    .lc-badge { position: absolute; top: 18px; left: 18px; background: rgba(11,11,13,0.65); backdrop-filter: blur(10px); border-radius: 100px; padding: 6px 14px; border: 1px solid rgba(200,176,138,0.25); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-light); }
+    .lc-body { padding: 26px 28px 30px; }
+    .lc-name { font-family: var(--serif); font-size: 38px; font-weight: 600; margin-bottom: 16px; line-height: 1; }
+    .lc-info-row { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 8px; }
+    .lc-info-row svg { flex-shrink: 0; margin-top: 3px; color: var(--gold); }
+    .lc-info-row p { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.55; white-space: pre-line; }
+    .lc-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+
+    /* SERVICES */
+    .services-section { background: var(--black); padding: 110px 40px; border-top: 1px solid rgba(138,106,75,0.08); position: relative; overflow: hidden; }
+    .services-inner { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+    .float-deco { position: absolute; pointer-events: none; z-index: 0; opacity: 0.08; }
+    .services-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 40px 0; }
+    .tab-pill { font-size: 12px; letter-spacing: 0.04em; padding: 10px 18px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.42); transition: all 0.22s; font-weight: 400; }
+    .tab-pill:hover { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.25); }
+    .tab-pill.active { background: var(--gold); border-color: transparent; color: #fff; font-weight: 600; }
+    .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+    .services-note { display: inline-flex; align-items: center; gap: 8px; background: rgba(138,106,75,0.08); border: 1px solid rgba(138,106,75,0.2); border-radius: 100px; padding: 6px 14px; margin-bottom: 22px; }
+    .services-note .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+    .services-note span { font-size: 11px; letter-spacing: 0.08em; color: var(--gold-light); }
+    .service-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 16px; }
+    .service-item-name { font-size: 14px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+    .service-item-desc { font-size: 12px; color: rgba(255,255,255,0.3); }
+    .service-item-price { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--gold-light); flex-shrink: 0; }
+    .services-visual { border-radius: 22px; overflow: hidden; aspect-ratio: 4/5; border: 1px solid rgba(138,106,75,0.12); position: relative; }
+    .services-visual img { width: 100%; height: 100%; object-fit: cover; }
+    .services-visual-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(11,11,13,0.92), transparent 60%); padding: 30px 24px 22px; }
+    .sv-cat { font-family: var(--serif); font-size: 30px; font-weight: 600; color: #fff; }
+    .sv-count { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
+    .services-sede-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin: 28px 0 12px; }
+    .services-sede-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* STYLE LAB (interactive) */
+    .stylelab-section { background: var(--dark2); padding: 100px 40px 110px; position: relative; overflow: hidden; border-top: 1px solid rgba(138,106,75,0.08); }
+    .stylelab-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .stylelab-header { text-align: center; max-width: 740px; margin: 0 auto 60px; }
+    .stylelab-header .section-label { justify-content: center; }
+    .stylelab-header .section-label::before { display: none; }
+    .stylelab-header .section-label span { color: var(--gold-light); }
+    .stylelab-header h2 { font-family: var(--serif); font-size: clamp(40px, 5.5vw, 70px); font-weight: 600; line-height: 1; letter-spacing: -0.025em; margin-bottom: 18px; }
+    .stylelab-header h2 em { color: var(--gold-light); font-style: italic; }
+    .stylelab-header p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+    .stylelab-stage { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; min-height: 640px; }
+
+    .stylelab-display {
+      position: relative; border-radius: 24px; overflow: hidden;
+      background: var(--black); aspect-ratio: 4/5; max-height: 720px;
+      border: 1px solid rgba(138,106,75,0.18);
+    }
+    .stylelab-display::before {
+      content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+      box-shadow: inset 0 0 80px rgba(0,0,0,0.5);
+    }
+    .sl-img-wrap { position: absolute; inset: 0; }
+    .sl-img-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      will-change: clip-path, opacity, transform;
+    }
+    .sl-overlay {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: linear-gradient(to top, rgba(11,11,13,0.92) 0%, rgba(11,11,13,0.1) 55%, transparent 100%);
+    }
+    .sl-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 36px 36px 40px; }
+    .sl-cat { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .sl-name { font-family: var(--serif); font-size: clamp(32px, 3.4vw, 50px); font-weight: 600; line-height: 1; margin-bottom: 12px; color: #fff; }
+    .sl-desc { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.55); max-width: 360px; margin-bottom: 20px; }
+    .sl-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .sl-price { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--gold-light); }
+    .sl-floating-tag {
+      position: absolute; top: 24px; right: 24px; z-index: 3;
+      background: rgba(11,11,13,0.7); backdrop-filter: blur(12px);
+      border: 1px solid rgba(200,176,138,0.25);
+      padding: 8px 14px; border-radius: 100px;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sl-floating-tag .lab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-light); animation: blink 1.4s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .stylelab-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      align-content: start; max-height: 720px; overflow-y: auto; padding-right: 4px;
+    }
+    .style-thumb {
+      position: relative; border-radius: 16px; overflow: hidden;
+      aspect-ratio: 3/4; cursor: pointer; background: var(--dark);
+      border: 2px solid transparent;
+      transition: transform 0.4s var(--ease-out), border-color 0.25s;
+    }
+    .style-thumb:hover { transform: translateY(-4px); }
+    .style-thumb.active { border-color: var(--gold-light); }
+    .style-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .style-thumb:hover img { transform: scale(1.07); }
+    .style-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11,11,13,0.92) 28%, transparent 65%); }
+    .style-thumb-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 14px 12px; }
+    .style-thumb-cat { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+    .style-thumb-name { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.2; }
+    .style-thumb-check { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--gold-light); display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.4); transition: opacity 0.25s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1); z-index: 2; }
+    .style-thumb.active .style-thumb-check { opacity: 1; transform: scale(1); }
+    .style-thumb-check svg { color: var(--black); }
+
+    /* PRODUCTS */
+    .products-section { background: var(--black); padding: 110px 40px; border-top: 1px solid rgba(138,106,75,0.08); position: relative; overflow: hidden; }
+    .products-inner { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+    .products-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px; margin-bottom: 48px; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .product-card {
+      background: var(--dark); border-radius: 22px; overflow: hidden;
+      border: 1px solid rgba(138,106,75,0.12);
+      transition: transform 0.4s var(--ease-out), border-color 0.3s, box-shadow 0.4s;
+      display: flex; flex-direction: column;
+      transform-style: preserve-3d; will-change: transform;
+    }
+    .product-card:hover { transform: translateY(-6px); border-color: rgba(200,176,138,0.35); box-shadow: 0 24px 60px -20px rgba(0,0,0,0.7); }
+    .product-img { height: 200px; background: var(--dark2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .product-img img { width: 140px; height: 140px; object-fit: contain; opacity: 0.7; transition: transform 0.6s var(--ease-out); filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); }
+    .product-card:hover .product-img img { transform: scale(1.1) rotate(-2deg); }
+    .product-info { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
+    .product-brand { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .product-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 6px; line-height: 1.3; }
+    .product-desc { font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.5; flex: 1; margin-bottom: 18px; }
+    .product-cta { font-size: 12px; padding: 10px 16px; justify-content: center; }
+
+    /* SOCIAL */
+    .social-section { background: var(--black); padding: 100px 0 80px; border-top: 1px solid rgba(138,106,75,0.08); }
+    .social-inner { padding: 0 40px; max-width: 1120px; margin: 0 auto 38px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px; }
+    .social-strip-wrap { position: relative; }
+    .social-fade-l { position: absolute; left: 0; top: 0; bottom: 0; width: 80px; background: linear-gradient(to right, var(--black), transparent); pointer-events: none; z-index: 2; }
+    .social-fade-r { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: linear-gradient(to left, var(--black), transparent); pointer-events: none; z-index: 2; }
+    .social-cards { display: flex; gap: 14px; padding: 14px 40px 22px; overflow-x: auto; }
+    .social-card { flex-shrink: 0; width: 180px; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; position: relative; border: 1.5px solid rgba(255,255,255,0.07); transition: all 0.4s var(--ease-out); cursor: pointer; }
+    .social-card.inactive { opacity: 0.55; transform: scale(0.97); }
+    .social-card.active { border-color: var(--gold); transform: scale(1.04); }
+    .social-card img { width: 100%; height: 100%; object-fit: cover; }
+    .social-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11,11,13,0.92) 28%, transparent 65%); }
+    .social-platform { position: absolute; top: 10px; left: 10px; }
+    .ig-badge { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #f09433, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888); display: flex; align-items: center; justify-content: center; }
+    .tt-badge { width: 22px; height: 22px; border-radius: 6px; background: #000; display: flex; align-items: center; justify-content: center; }
+    .social-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.18); }
+    .social-meta { position: absolute; bottom: 10px; left: 10px; right: 10px; }
+    .social-title { font-size: 11px; font-weight: 500; color: #fff; line-height: 1.3; }
+    .social-cat { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-light); margin-top: 3px; }
+
+    /* REVIEWS */
+    .reviews-section { background: var(--dark2); padding: 110px 40px; }
+    .reviews-inner { max-width: 1180px; margin: 0 auto; }
+    .reviews-summary { display: grid; grid-template-columns: 280px 1fr; gap: 60px; align-items: center; padding: 36px 40px; background: var(--dark); border-radius: 24px; border: 1px solid rgba(138,106,75,0.15); margin-bottom: 50px; }
+    .reviews-overall { text-align: center; padding-right: 40px; border-right: 1px solid rgba(255,255,255,0.06); }
+    .reviews-score { font-family: var(--serif); font-size: 76px; font-weight: 600; color: #fff; line-height: 1; }
+    .reviews-stars { display: flex; gap: 4px; justify-content: center; margin: 10px 0; }
+    .reviews-stars svg { width: 20px; height: 20px; fill: var(--gold-light); }
+    .reviews-count { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; }
+    .google-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 7px 14px; border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; background: rgba(255,255,255,0.03); }
+    .google-g-svg { width: 16px; height: 16px; }
+    .google-badge span { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.04em; }
+    .reviews-bars { display: flex; flex-direction: column; gap: 10px; }
+    .rating-bar-row { display: flex; align-items: center; gap: 14px; }
+    .rating-bar-label { font-size: 11px; color: rgba(255,255,255,0.45); width: 40px; display: flex; align-items: center; gap: 4px; }
+    .rating-bar-label svg { width: 11px; height: 11px; fill: var(--gold-light); }
+    .rating-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.07); border-radius: 100px; overflow: hidden; }
+    .rating-bar-fill { height: 100%; background: linear-gradient(to right, var(--gold), var(--gold-light)); border-radius: 100px; transform-origin: left; transform: scaleX(0); transition: transform 1.2s var(--ease-out); }
+    .rating-bar-count { font-size: 11px; color: rgba(255,255,255,0.32); width: 40px; text-align: right; }
+    .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .review-card { background: var(--dark); border-radius: 20px; padding: 26px; border: 1px solid rgba(255,255,255,0.05); transition: border-color 0.3s, transform 0.4s var(--ease-out); display: flex; flex-direction: column; }
+    .review-card:hover { border-color: rgba(138,106,75,0.4); transform: translateY(-6px); }
+    .review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .review-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; color: #fff; flex-shrink: 0; }
+    .review-meta .review-name { font-size: 14px; font-weight: 600; color: #fff; }
+    .review-meta .review-date { font-size: 11px; color: rgba(255,255,255,0.32); margin-top: 1px; }
+    .review-stars { display: flex; gap: 2px; margin-bottom: 12px; }
+    .review-stars svg { width: 13px; height: 13px; fill: var(--gold-light); }
+    .review-text { font-size: 13px; color: rgba(255,255,255,0.58); line-height: 1.65; flex: 1; }
+    .review-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .review-sede { font-size: 9px; color: var(--gold); letter-spacing: 0.16em; text-transform: uppercase; }
+    .review-via { display: flex; align-items: center; gap: 6px; font-size: 10px; color: rgba(255,255,255,0.3); }
+
+    /* FOOTER */
+    footer { background: var(--black); border-top: 1px solid rgba(138,106,75,0.1); padding: 70px 40px 36px; }
+    .footer-inner { max-width: 1120px; margin: 0 auto; }
+    .footer-cta { background: linear-gradient(135deg, rgba(138,106,75,0.12), rgba(200,176,138,0.04)); border: 1px solid rgba(200,176,138,0.18); border-radius: 28px; padding: 48px 44px; margin-bottom: 60px; display: grid; grid-template-columns: 1fr auto; gap: 36px; align-items: center; }
+    .footer-cta-text h3 { font-family: var(--serif); font-size: clamp(32px, 4vw, 48px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+    .footer-cta-text h3 em { color: var(--gold-light); font-style: italic; }
+    .footer-cta-text p { font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 12px; max-width: 420px; }
+    .footer-cta-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px; }
+    .footer-brand-name { font-family: var(--serif); font-size: 20px; font-weight: 600; }
+    .footer-brand-sub { font-size: 12px; color: rgba(255,255,255,0.32); line-height: 1.6; margin-top: 4px; }
+    .footer-socials { display: flex; gap: 10px; margin-top: 18px; }
+    .footer-social-link { color: rgba(255,255,255,0.4); transition: color 0.2s; }
+    .footer-social-link:hover { color: var(--gold-light); }
+    .footer-col-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+    .footer-link { display: block; font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 9px; transition: color 0.2s; }
+    .footer-link:hover { color: var(--gold-light); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.04); padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom span { font-size: 11px; color: rgba(255,255,255,0.18); }
+
+    /* WHATSAPP FLOAT */
+    #wa-float { position: fixed; bottom: 28px; right: 28px; z-index: 900; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.4); transition: transform 0.3s var(--ease-out), box-shadow 0.3s; }
+    #wa-float:hover { transform: scale(1.12); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+    #wa-float::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #25D366; animation: waPulse 2.4s ease-out infinite; }
+    @keyframes waPulse { 0%{transform:scale(0.95);opacity:0.7} 100%{transform:scale(1.5);opacity:0} }
+
+    /* RESPONSIVE */
+    @media (max-width: 980px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .services-visual { display: none; }
+      .stylelab-stage { grid-template-columns: 1fr; }
+      .stylelab-display { aspect-ratio: 4/3; max-height: 480px; }
+      .stylelab-grid { grid-template-columns: repeat(3, 1fr); max-height: none; }
+      .reviews-summary { grid-template-columns: 1fr; gap: 28px; padding: 28px 24px; }
+      .reviews-overall { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding-right: 0; padding-bottom: 28px; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-cta { grid-template-columns: 1fr; padding: 36px 28px; gap: 24px; }
+      .locations-grid { grid-template-columns: 1fr; }
+      .concept-inner { grid-template-columns: 1fr; gap: 40px; }
+      .concept-visual { max-height: 420px; }
+      .concept-secondary { width: 130px; bottom: 0; right: 0; }
+      #nav .nav-link { display: none; }
+    }
+    @media (max-width: 600px) {
+      .hero-stats { gap: 0; }
+      .hero-stat { padding: 12px 16px; }
+      .stat-divider { display: none; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .stylelab-grid { grid-template-columns: 1fr 1fr; }
+      .marquee-item { width: 150px; height: 220px; }
+      .stats-section { padding: 40px 24px; }
+      .quote-section, .locations-section, .services-section, .stylelab-section, .products-section, .reviews-section { padding-left: 22px; padding-right: 22px; }
+      .reviews-summary { padding: 24px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div class="noise"></div>
+<div id="progress"></div>
+
+<!-- Loader -->
+<div id="loader">
+  <img src="assets/logos/logo-01.png" alt="Mr Brook" />
+  <div class="ld-bar"></div>
+  <div class="ld-text">Mr Brook · Cargando experiencia</div>
+</div>
+
+<!-- Nav -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">
+    <img src="assets/logos/logo-01.png" alt="Mr Brook" />
+    <span>Mr Brook</span>
+  </a>
+  <div class="nav-sep"></div>
+  <a href="#servicios" class="nav-link">Servicios</a>
+  <a href="#estilos" class="nav-link">Estilos</a>
+  <a href="#sedes" class="nav-link">Sedes</a>
+  <a href="#reviews" class="nav-link">Reviews</a>
+  <div class="nav-sep"></div>
+  <a href="https://www.instagram.com/mrbrook.bs/" target="_blank" rel="noopener" class="nav-social" aria-label="Instagram">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>
+  </a>
+  <a href="https://www.tiktok.com/@mrbrook.bs" target="_blank" rel="noopener" class="nav-social" aria-label="TikTok">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+  </a>
+  <div class="nav-sep"></div>
+  <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-nav">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+    Reservar
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <video id="hero-video" autoplay muted loop playsinline>
+    <source src="assets/video/hero.mp4" type="video/mp4" />
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-content">
+    <img class="hero-logo" src="assets/logos/logo-01.png" alt="" />
+    <p class="hero-kicker">Barber Shop & SPA · Guayaquil</p>
+    <h1 class="hero-h1">
+      <span class="reveal-line"><span>La mejor barbería</span></span><br/>
+      <span class="reveal-line"><span><em>del Ecuador.</em></span></span>
+    </h1>
+    <p class="hero-sub">Corte, barba, color, ondas, Hair SPA, facial, uñas y coffee.<br/><strong style="color: rgba(255,255,255,0.85)">Dos sedes en Guayaquil.</strong></p>
+    <div class="hero-ctas">
+      <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+        Urdesa
+      </a>
+      <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+        La Joya
+      </a>
+      <a href="#estilos" class="btn-ghost">Probar estilos</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" data-count="21300" data-suffix="K">0</div><div class="hero-stat-lbl">seguidores IG</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">sedes GYE</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">★ 5.0</div><div class="hero-stat-lbl">Google Reviews</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">9</div><div class="hero-stat-lbl">categorías</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-line"><div class="scroll-line-bar"></div></div>
+</section>
+
+<!-- MARQUEE -->
+<section class="marquee-section">
+  <div class="section-label" style="padding: 0 40px 24px"><span>Felices siempre por atenderte</span></div>
+  <div class="marquee-row">
+    <div class="marquee-track marquee-track-a" id="mq-a"></div>
+  </div>
+  <div class="marquee-row">
+    <div class="marquee-track marquee-track-b" id="mq-b"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-val" data-count="187">0</span><div class="stat-lbl">Reseñas Google</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-val" data-count="21">0</span><span class="stat-suffix">.3K</span><div class="stat-lbl">Seguidores IG</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-val" data-count="9">0</span><div class="stat-lbl">Categorías</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-val" data-count="2">0</span><div class="stat-lbl">Sedes</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-val">5.0</span><div class="stat-lbl">★ Google Rating</div></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="quote-inner">
+    <svg class="quote-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+    <blockquote class="quote-text" id="quote-anim">
+      "Te ayudamos a encontrar el estilo <span class="q-word gold">que va contigo.</span>"
+    </blockquote>
+    <p class="quote-byline">— Mr Brook Barber Shop & SPA</p>
+    <div class="quote-badges">
+      <span class="badge">Cortes</span>
+      <span class="badge">Barba</span>
+      <span class="badge">Hair SPA</span>
+      <span class="badge">Coffee</span>
+      <span class="badge">Color</span>
+      <span class="badge">Uñas</span>
+      <span class="badge">Rizos</span>
+      <span class="badge">Faciales</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT (3D brand showcase) -->
+<section class="concept-section">
+  <div class="concept-inner">
+    <div class="concept-text">
+      <div class="section-label"><span>El concepto Mr Brook</span></div>
+      <h2 class="section-title">No es una barbería.<br/><em>Es un puerto.</em></h2>
+      <p>Mr Brook nació con una bandera pirata clavada arriba del sillón. Madera oscura, luz cálida, café recién hecho y herramientas de capitán. La filosofía: el cabello se trabaja desde la raíz, y si te quedas, te invitamos un café.</p>
+      <p>Dos sedes en Guayaquil, una tripulación de barberos certificados, y una experiencia que se ve en el resultado y se siente en el lugar.</p>
+      <div class="concept-stats">
+        <div class="concept-stat"><div class="concept-stat-val">2026</div><div class="concept-stat-lbl">Apertura La Joya</div></div>
+        <div class="concept-stat"><div class="concept-stat-val">9</div><div class="concept-stat-lbl">Categorías de servicio</div></div>
+        <div class="concept-stat"><div class="concept-stat-val">5.0★</div><div class="concept-stat-lbl">Google Rating</div></div>
+      </div>
+    </div>
+    <div class="concept-visual tilt" data-tilt-strength="6">
+      <div class="concept-render-grid"></div>
+      <div class="concept-render-bg"></div>
+      <div class="concept-render">
+        <img src="assets/render/shop-balcony.png" alt="Concepto Mr Brook · render 3D"/>
+      </div>
+      <div class="concept-secondary"><img src="assets/render/shop-front.png" alt=""/></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<section id="sedes" class="locations-section">
+  <div class="locations-inner">
+    <div class="section-label"><span>Dos sedes</span></div>
+    <h2 class="section-title gsap-reveal">Te esperamos<br/><em>en nuestras sedes.</em></h2>
+    <div class="locations-grid">
+      <div class="location-card tilt" data-tilt-strength="8">
+        <div class="lc-image">
+          <img src="assets/photos/foto-04.jpg" alt="Sede Urdesa" />
+          <div class="lc-image-overlay"></div>
+          <div class="lc-badge">Sede Urdesa</div>
+        </div>
+        <div class="lc-body">
+          <h3 class="lc-name">Urdesa</h3>
+          <div class="lc-info-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <p>Av. Victor Emilio Estrada 1116, entre Laureles y Jiguas</p>
+          </div>
+          <div class="lc-info-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <p>Lunes–Sábado: 10:00 – 19:45
+Domingo: 10:00 – 17:30</p>
+          </div>
+          <div class="lc-btns">
+            <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:11px 20px">Reservar</a>
+            <a href="https://maps.google.com/?q=Mr+Brook+Barber+Urdesa+Guayaquil" target="_blank" rel="noopener" class="btn-ghost" style="font-size:13px;padding:11px 18px">Cómo llegar</a>
+          </div>
+        </div>
+      </div>
+      <div class="location-card tilt" data-tilt-strength="8">
+        <div class="lc-image">
+          <img src="assets/photos/foto-09.jpg" alt="Sede La Joya" />
+          <div class="lc-image-overlay"></div>
+          <div class="lc-badge">Sede La Joya</div>
+        </div>
+        <div class="lc-body">
+          <h3 class="lc-name">La Joya</h3>
+          <div class="lc-info-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <p>Local #25, La Piazza / Plaza Vienna, Urb. La Joya</p>
+          </div>
+          <div class="lc-info-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <p>Horario — consultar por WhatsApp</p>
+          </div>
+          <div class="lc-btns">
+            <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:11px 20px">Reservar</a>
+            <a href="https://maps.google.com/?q=Mr+Brook+La+Joya+Guayaquil" target="_blank" rel="noopener" class="btn-ghost" style="font-size:13px;padding:11px 18px">Cómo llegar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="servicios" class="services-section">
+  <img class="float-deco" src="assets/render/scissors-pro.png" style="left:-60px; top:10%; width:220px;"/>
+  <img class="float-deco" src="assets/render/tools-kit.png" style="right:-60px; bottom:10%; width:260px;"/>
+  <div class="services-inner">
+    <div class="section-label"><span>Catálogo Mr Brook</span></div>
+    <h2 class="section-title">Todo lo que hacemos,<br/><em>lo hacemos capo.</em></h2>
+    <div class="services-tabs" id="services-tabs"></div>
+    <div class="services-grid">
+      <div>
+        <div class="services-note"><div class="dot"></div><span id="svc-note">Sin cita — por orden de llegada</span></div>
+        <div id="svc-items"></div>
+        <div class="services-sede-label">Escoge tu sede</div>
+        <div class="services-sede-btns">
+          <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;padding:10px 18px">Urdesa</a>
+          <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="btn-ghost" style="font-size:12px;padding:10px 18px">La Joya</a>
+        </div>
+      </div>
+      <div class="services-visual">
+        <img id="svc-img" src="assets/generated/haircut-side.png" alt=""/>
+        <div class="services-visual-overlay">
+          <div class="sv-cat" id="svc-cat">Cortes</div>
+          <div class="sv-count" id="svc-count">4 servicios</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STYLE LAB (Interactive) -->
+<section id="estilos" class="stylelab-section">
+  <img class="float-deco" src="assets/generated/scissors.png" style="left:-80px; top:8%; width:240px; opacity: 0.06;"/>
+  <div class="stylelab-inner">
+    <div class="stylelab-header">
+      <div class="section-label"><span>Style Lab · try-on en vivo</span></div>
+      <h2>Tu cabeza,<br/><em>siete looks.</em></h2>
+      <p>Mismo modelo, siete estilos reales que salen de Mr Brook. Tocá cada thumb y mirá cómo cambia el look completo. El que te late, lo reservamos.</p>
+    </div>
+
+    <div class="stylelab-stage">
+      <!-- Display -->
+      <div class="stylelab-display">
+        <div class="sl-floating-tag"><span class="lab-dot"></span> Try-on en vivo</div>
+        <div class="sl-img-wrap" id="sl-img-wrap">
+          <img id="sl-img" src="assets/styles/01-textured-crop.png" alt="Modelo Mr Brook · Textured Crop"/>
+        </div>
+        <div class="sl-overlay"></div>
+        <div class="sl-info">
+          <div class="sl-cat" id="sl-cat">Textured Crop</div>
+          <h3 class="sl-name" id="sl-name">Textured Crop · Fade</h3>
+          <p class="sl-desc" id="sl-desc">El corte estrella de Mr Brook. Textura arriba, fade limpio a los lados. El que se llevan los que ya saben.</p>
+          <div class="sl-row">
+            <div class="sl-price" id="sl-price">desde $15</div>
+            <a id="sl-cta" href="https://api.whatsapp.com/send/?phone=593969012964&text=Hola%20Mr%20Brook!%20Vi%20el%20Textured%20Crop%20en%20la%20web%20y%20quiero%20reservar." target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:12px 22px">Reservar este look</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <div class="stylelab-grid" id="stylelab-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+  <img class="float-deco" src="assets/generated/tools-kit.png" style="right:-80px; top:6%; width:300px; transform:rotate(15deg);"/>
+  <div class="products-inner">
+    <div class="products-head">
+      <div>
+        <div class="section-label"><span>Productos</span></div>
+        <h2 class="section-title">Llevate el look<br/><em>a la casa.</em></h2>
+      </div>
+      <p style="font-size:13px; color: rgba(255,255,255,0.4); max-width: 280px; line-height: 1.6;">Dale al botón, armamos el mensaje y te respondemos al toque.</p>
+    </div>
+    <div class="products-grid" id="products-grid"></div>
+    <p style="margin-top:20px; font-size:11px; color: rgba(255,255,255,0.22); font-style: italic;">Productos referenciales — catálogo final se confirma con el equipo Mr Brook.</p>
+  </div>
+</section>
+
+<!-- SOCIAL -->
+<section class="social-section">
+  <div class="social-inner">
+    <div>
+      <div class="section-label"><span>@mrbrook.bs</span></div>
+      <h2 class="section-title">Lo que pasa en Mr Brook<br/><em>se ve en redes.</em></h2>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="https://www.instagram.com/mrbrook.bs/" target="_blank" rel="noopener" class="btn-ghost" style="font-size:12px;padding:10px 16px;display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>
+        Instagram
+      </a>
+      <a href="https://www.tiktok.com/@mrbrook.bs" target="_blank" rel="noopener" class="btn-ghost" style="font-size:12px;padding:10px 16px;display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+        TikTok
+      </a>
+    </div>
+  </div>
+  <div class="social-strip-wrap">
+    <div class="social-fade-l"></div>
+    <div class="social-fade-r"></div>
+    <div class="social-cards" id="social-cards"></div>
+  </div>
+</section>
+
+<!-- REVIEWS (Google) -->
+<section id="reviews" class="reviews-section">
+  <div class="reviews-inner">
+    <div class="section-label"><span>Reseñas verificadas</span></div>
+    <h2 class="section-title" style="margin-bottom: 50px;">Lo que dicen<br/><em>en Google Reviews.</em></h2>
+
+    <div class="reviews-summary">
+      <div class="reviews-overall">
+        <div class="reviews-score">5.0</div>
+        <div class="reviews-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="reviews-count">187 reseñas verificadas</div>
+        <div class="google-badge">
+          <svg class="google-g-svg" viewBox="0 0 48 48"><path fill="#4285f4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34a853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#fbbc05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#ea4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <span>Publicado en Google</span>
+        </div>
+      </div>
+      <div class="reviews-bars">
+        <div class="rating-bar-row"><span class="rating-bar-label">5<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div class="rating-bar-track"><div class="rating-bar-fill" data-fill="0.96"></div></div><span class="rating-bar-count">179</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">4<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div class="rating-bar-track"><div class="rating-bar-fill" data-fill="0.04"></div></div><span class="rating-bar-count">7</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">3<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div class="rating-bar-track"><div class="rating-bar-fill" data-fill="0.005"></div></div><span class="rating-bar-count">1</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">2<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div class="rating-bar-track"><div class="rating-bar-fill" data-fill="0"></div></div><span class="rating-bar-count">0</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">1<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div class="rating-bar-track"><div class="rating-bar-fill" data-fill="0"></div></div><span class="rating-bar-count">0</span></div>
+      </div>
+    </div>
+
+    <div class="reviews-grid" id="reviews-grid"></div>
+    <p style="margin-top:24px; font-size:11px; color: rgba(255,255,255,0.22); font-style: italic; text-align: center;">Reseñas demo — listas para conectar con Google Places API en producción.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-cta">
+      <div class="footer-cta-text">
+        <h3>Elegí tu sede<br/><em>y salís más bacán.</em></h3>
+        <p>Reservá en cualquiera de nuestras dos sedes en Guayaquil. Te respondemos por WhatsApp al toque.</p>
+      </div>
+      <div class="footer-cta-btns">
+        <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-primary">Reservar Urdesa</a>
+        <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="btn-primary">Reservar La Joya</a>
+      </div>
+    </div>
+
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <img src="assets/logos/logo-01.png" alt="" style="width:32px;height:32px;filter:brightness(10);"/>
+          <span class="footer-brand-name">Mr Brook</span>
+        </div>
+        <p class="footer-brand-sub">Barber Shop & SPA<br/>Guayaquil, Ecuador</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/mrbrook.bs/" target="_blank" rel="noopener" class="footer-social-link" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@mrbrook.bs" target="_blank" rel="noopener" class="footer-social-link" aria-label="TikTok">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-col-title">Sedes</h4>
+        <a href="#sedes" class="footer-link">Urdesa</a>
+        <a href="#sedes" class="footer-link">La Joya</a>
+        <a href="https://maps.google.com/?q=Mr+Brook+Barber+Urdesa" target="_blank" rel="noopener" class="footer-link">Maps Urdesa</a>
+        <a href="https://maps.google.com/?q=Mr+Brook+La+Joya" target="_blank" rel="noopener" class="footer-link">Maps La Joya</a>
+      </div>
+      <div>
+        <h4 class="footer-col-title">Reservas</h4>
+        <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="footer-link">WhatsApp Urdesa</a>
+        <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="footer-link">WhatsApp La Joya</a>
+        <a href="https://linktr.ee/MrBrook.bs" target="_blank" rel="noopener" class="footer-link">Linktree</a>
+      </div>
+      <div>
+        <h4 class="footer-col-title">Redes</h4>
+        <a href="https://www.instagram.com/mrbrook.bs/" target="_blank" rel="noopener" class="footer-link">Instagram</a>
+        <a href="https://www.tiktok.com/@mrbrook.bs" target="_blank" rel="noopener" class="footer-link">TikTok</a>
+        <a href="#estilos" class="footer-link">Style Lab</a>
+        <a href="#reviews" class="footer-link">Reviews</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Mr Brook Barber Shop & SPA — Guayaquil</span>
+      <span>Demo · Pendiente producción</span>
+    </div>
+  </div>
+</footer>
+
+<a id="wa-float" href="https://linktr.ee/MrBrook.bs" target="_blank" rel="noopener" aria-label="Reservar por WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const MARQUEE = [
+  { src: 'assets/photos/foto-01.jpg', label: 'Tripulación' },
+  { src: 'assets/photos/foto-02.jpg', label: 'Proceso' },
+  { src: 'assets/photos/foto-03.jpg', label: 'Coffee' },
+  { src: 'assets/photos/foto-04.jpg', label: 'Sede' },
+  { src: 'assets/photos/foto-05.jpg', label: 'Uñas' },
+  { src: 'assets/photos/foto-06.jpg', label: 'Hair SPA' },
+  { src: 'assets/photos/foto-07.jpg', label: 'Coffee' },
+  { src: 'assets/photos/foto-08.jpg', label: 'SPA' },
+  { src: 'assets/generated/haircut-side.png', label: 'Corte' },
+  { src: 'assets/generated/hair-spa-wash.png', label: 'Hair SPA' },
+  { src: 'assets/generated/curly-hair.png', label: 'Ondas' },
+  { src: 'assets/generated/beard-razor.png', label: 'Barba' }
+];
+
+const SERVICE_GROUPS = [
+  { category: 'Cortes', img: 'assets/generated/haircut-side.png', note: 'Sin cita — por orden de llegada', items: [
+    { name: 'Express', price: '$12', desc: 'Rápido y bacán' },
+    { name: 'Completo', price: '$15', desc: 'Con acabado y producto' },
+    { name: 'VIP', price: '$25', desc: 'Con lavado incluido' },
+    { name: 'Largo / mediano', price: '$20', desc: 'Cabello largo o mediano' }
+  ]},
+  { category: 'Barba', img: 'assets/generated/beard-razor.png', note: 'Sin cita — por orden', items: [
+    { name: 'Arreglo de barba', price: '$10', desc: 'Diseño y perfilado' },
+    { name: 'Cejas', price: '$3', desc: 'Perfilado preciso' },
+    { name: 'Diseños / líneas', price: '$3–$10', desc: 'Desde básico hasta artístico' },
+    { name: 'Tinturado barba', price: '$15', desc: 'Color natural o fantasía' },
+    { name: 'Lavado', price: '$3', desc: 'Gratis con corte' }
+  ]},
+  { category: 'Rizos y ondas', img: 'assets/generated/curly-hair.png', note: 'Con cita previa', items: [
+    { name: 'Permanente rizos', price: 'desde $40', desc: 'Textura definida y duradera' },
+    { name: 'Permanente ondas', price: 'desde $50', desc: 'Ondas naturales estilizadas' }
+  ]},
+  { category: 'Alisados', img: 'assets/photos/foto-02.jpg', note: 'Con cita previa', items: [
+    { name: 'Alisado express', price: 'desde $40', desc: 'Liso de impacto' },
+    { name: 'Alisado definitivo', price: 'desde $80', desc: 'Liso duradero' },
+    { name: 'Trenzas', price: '$35–$55', desc: 'Varios estilos' }
+  ]},
+  { category: 'Hair SPA', img: 'assets/generated/hair-spa-wash.png', note: 'Con cita previa', items: [
+    { name: 'Diagnóstico capilar', price: '$15', desc: 'Evaluación profesional' },
+    { name: 'Terapia SPA', price: '$45', desc: 'Terapia terapéutica' },
+    { name: 'SPA completo', price: '$80', desc: 'Diagnóstico + terapia + producto' }
+  ]},
+  { category: 'Faciales', img: 'assets/generated/facial-care.png', note: 'Con cita previa', items: [
+    { name: 'Limpieza facial', price: '$30', desc: 'Limpieza profunda' },
+    { name: 'Tratamiento facial', price: '$50', desc: 'Con productos especializados' }
+  ]},
+  { category: 'Uñas', img: 'assets/photos/foto-05.jpg', note: 'Con cita o por orden', items: [
+    { name: 'Manicure básico', price: '$10', desc: 'Limpieza y arreglo' },
+    { name: 'Manicure completo', price: '$20', desc: 'Con tratamiento cutícula' },
+    { name: 'Manicure + pedicure', price: '$30', desc: 'Pack completo' }
+  ]},
+  { category: 'Color', img: 'assets/generated/platinum-blonde.png', note: 'Con cita previa', items: [
+    { name: 'Tinturado', price: 'desde $40', desc: 'Color parejo natural o fantasía' },
+    { name: 'Mechas', price: 'desde $60', desc: 'Highlights libres o papel' },
+    { name: 'Platinado', price: 'desde $100', desc: 'Decoloración total' },
+    { name: 'Platinado premium', price: 'desde $150+', desc: 'Doble decoloración' }
+  ]},
+  { category: 'Coffee', img: 'assets/photos/foto-03.jpg', note: 'Sede Urdesa', items: [
+    { name: 'Café Mr Brook', price: 'consultar', desc: 'Espresso, frappé y más' },
+    { name: 'Snacks & bebidas', price: 'consultar', desc: 'Mientras esperás o después' }
+  ]}
+];
+
+// Mismo modelo, 7 variantes de corte/color/barba — Style Lab try-on real
+const STYLES = [
+  { cat: 'Textured Crop', name: 'Textured Crop · Fade', price: 'desde $15', img: 'assets/styles/01-textured-crop.png', desc: 'El corte estrella de Mr Brook. Textura arriba, fade limpio a los lados. El que se llevan los que ya saben.', wa: 'Hola Mr Brook! Vi el Textured Crop en la web y quiero reservar.' },
+  { cat: 'Buzz Cut', name: 'Buzz · Skin Fade', price: 'desde $12', img: 'assets/styles/02-buzz-fade.png', desc: 'Cero rollo, máxima limpieza. Buzz al ras con skin fade. Sale en 25 minutos.', wa: 'Hola Mr Brook! Quiero el Buzz · Skin Fade.' },
+  { cat: 'Mullet', name: 'Mullet Permanente', price: 'desde $50', img: 'assets/styles/03-mullet-perm.png', desc: 'Mullet con permanente coreana. La tendencia que no para de subir. Con cita previa.', wa: 'Hola Mr Brook! Me interesa el Mullet con permanente.' },
+  { cat: 'Rizos', name: 'Permanente Tipo 2B', price: 'desde $40', img: 'assets/styles/04-curly-top.png', desc: 'Permanente coreana ondas tipo 2B. Textura definida que dura semanas. La firma Mr Brook.', wa: 'Hola Mr Brook! Quiero la permanente tipo 2B.' },
+  { cat: 'Platinado', name: 'Platinado Premium', price: 'desde $100', img: 'assets/styles/05-platinum.png', desc: 'Decoloración total + matización. Doble proceso para platinado parejo de revista. Con cita.', wa: 'Hola Mr Brook! Quiero info del platinado premium.' },
+  { cat: 'Color', name: 'Cobre Texturizado', price: 'desde $60', img: 'assets/styles/06-copper.png', desc: 'Color cobre con corte texturizado y high fade. Para los que vienen con personalidad.', wa: 'Hola Mr Brook! Me interesa el cobre texturizado.' },
+  { cat: 'Barba', name: 'Full Beard · Diseño', price: 'desde $13', img: 'assets/styles/07-beard-fade.png', desc: 'Corte clásico + perfilado completo de barba. El combo que cambia la cara.', wa: 'Hola Mr Brook! Quiero el combo corte + barba.' }
+];
+
+const PRODUCTS = [
+  { brand: 'Mr Brook', name: 'Pomada de fijación fuerte', desc: 'Fijación todo el día, brillo medio.', img: 'assets/generated/tools-kit.png', wa: 'Hola! Me interesa la pomada de fijación fuerte. ¿Tienen disponible?' },
+  { brand: 'Mr Brook', name: 'Shampoo cabello tratado', desc: 'Limpieza suave, conserva el color.', img: 'assets/generated/hair-spa-wash.png', wa: 'Hola! Me interesa el shampoo para cabello tratado.' },
+  { brand: 'Mr Brook', name: 'Acondicionador hidratante', desc: 'Hidratación profunda post-tratamiento.', img: 'assets/generated/hair-spa-wash.png', wa: 'Hola! Me interesa el acondicionador hidratante.' },
+  { brand: 'Mr Brook', name: 'Cera mate texturizante', desc: 'Sin brillo, máximo control.', img: 'assets/generated/tools-kit.png', wa: 'Hola! Me interesa la cera mate texturizante.' },
+  { brand: 'Mr Brook', name: 'Sérum capilar hidratante', desc: 'Nutrición y brillo sin grasa.', img: 'assets/generated/scissors.png', wa: 'Hola! Me interesa el sérum capilar.' },
+  { brand: 'Mr Brook', name: 'Aceite de barba', desc: 'Suaviza, nutre y da brillo a la barba.', img: 'assets/generated/beard-razor.png', wa: 'Hola! Me interesa el aceite de barba.' }
+];
+
+// URLs reales de reels Mr Brook — videos virales con vistas comprobadas
+const SOCIAL_VIDEOS = [
+  { platform: 'tt', title: 'Permanente Coreana 🫰🏻', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7434181309368438072', thumb: 'assets/styles/04-curly-top.png' },
+  { platform: 'tt', title: 'Ondas Tipo 2B 🔥', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7467639832466967814', thumb: 'assets/styles/03-mullet-perm.png' },
+  { platform: 'tt', title: 'Resultado 2B ✨', cat: 'antes/después', url: 'https://www.tiktok.com/@mrbrook.bs/video/7476557735870385463', thumb: 'assets/generated/curly-hair.png' },
+  { platform: 'tt', title: 'La mejor barbería de Guayaquil 💈', cat: 'apertura', url: 'https://www.tiktok.com/@mrbrook.bs/video/7024542627571748101', thumb: 'assets/render/shop-front.png' },
+  { platform: 'ig', title: 'Textured Crop · Fade', cat: 'cortes', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/01-textured-crop.png' },
+  { platform: 'ig', title: 'Platinado Premium', cat: 'color', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/05-platinum.png' },
+  { platform: 'ig', title: 'Cobre Texturizado', cat: 'color', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/06-copper.png' },
+  { platform: 'ig', title: 'Full Beard · Diseño', cat: 'barba', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/07-beard-fade.png' }
+];
+
+// Google-style reviews. Replace with Google Places API in production.
+const GOOGLE_REVIEWS = [
+  { name: 'Carlos Mendoza', initial: 'C', color: '#4285f4', stars: 5, when: 'hace 2 semanas', text: 'El corte más bacán que me han dado en Guayaquil. El café mientras esperas es un plus enorme. Equipo de primer nivel, vayan sin pensarlo.', sede: 'Urdesa' },
+  { name: 'Andrés Pacheco', initial: 'A', color: '#34a853', stars: 5, when: 'hace 1 mes', text: 'Vine por el platinado y quedé flipado. Capos de verdad, exactamente lo que quería. Voy a volver sin duda.', sede: 'La Joya' },
+  { name: 'Roberto Vélez', initial: 'R', color: '#ea4335', stars: 5, when: 'hace 3 semanas', text: 'El Hair SPA me cambió el cuero cabelludo. Llevo 6 meses viniendo y no cambio. Diagnóstico capilar súper profesional.', sede: 'Urdesa' },
+  { name: 'Sebastián López', initial: 'S', color: '#fbbc05', stars: 5, when: 'hace 1 mes', text: 'Tripulación de primer nivel. Los diseños en la nuca son otro nivel. Ambiente brutal, con el café es una experiencia completa.', sede: 'Urdesa' },
+  { name: 'Diego Freire', initial: 'D', color: '#4285f4', stars: 5, when: 'hace 2 meses', text: 'Vine por un corte y me quedé para el facial. Nunca lo había hecho pero fue lo máximo. El personal te explica todo perfectamente.', sede: 'La Joya' },
+  { name: 'Mateo García', initial: 'M', color: '#34a853', stars: 5, when: 'hace 3 meses', text: 'Las ondas quedaron perfectas, exactamente lo que quería. Muy profesionales, con cita todo fluye súper bien.', sede: 'Urdesa' }
+];
+
+/* ============================================================
+   POPULATE DOM
+   ============================================================ */
+
+// Marquee
+function buildMarquee(id, list) {
+  const track = document.getElementById(id);
+  const doubled = [...list, ...list];
+  doubled.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'marquee-item interactive';
+    item.innerHTML = `<img src="${p.src}" alt="${p.label}"/><span class="marquee-item-label">${p.label}</span>`;
+    track.appendChild(item);
+  });
+}
+buildMarquee('mq-a', MARQUEE);
+buildMarquee('mq-b', [...MARQUEE].reverse());
+
+// Service tabs
+const tabsEl = document.getElementById('services-tabs');
+const itemsEl = document.getElementById('svc-items');
+const noteEl = document.getElementById('svc-note');
+const imgEl = document.getElementById('svc-img');
+const catEl = document.getElementById('svc-cat');
+const countEl = document.getElementById('svc-count');
+let activeService = 0;
+
+SERVICE_GROUPS.forEach((g, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-pill interactive' + (i === 0 ? ' active' : '');
+  btn.textContent = g.category;
+  btn.addEventListener('click', () => selectService(i));
+  tabsEl.appendChild(btn);
+});
+
+function selectService(i) {
+  activeService = i;
+  const g = SERVICE_GROUPS[i];
+  document.querySelectorAll('.tab-pill').forEach((t, k) => t.classList.toggle('active', k === i));
+  noteEl.textContent = g.note;
+  catEl.textContent = g.category;
+  countEl.textContent = g.items.length + ' servicios';
+  // Image fade
+  imgEl.style.opacity = '0';
+  setTimeout(() => { imgEl.src = g.img; imgEl.style.opacity = '1'; }, 200);
+  // Items rebuild with stagger
+  itemsEl.innerHTML = '';
+  g.items.forEach((it, k) => {
+    const div = document.createElement('div');
+    div.className = 'service-item';
+    div.style.opacity = '0';
+    div.style.transform = 'translateX(-12px)';
+    div.innerHTML = `<div><div class="service-item-name">${it.name}</div><div class="service-item-desc">${it.desc}</div></div><div class="service-item-price">${it.price}</div>`;
+    itemsEl.appendChild(div);
+    setTimeout(() => { div.style.transition = 'opacity 0.4s, transform 0.4s'; div.style.opacity = '1'; div.style.transform = 'translateX(0)'; }, 50 + k * 60);
+  });
+}
+selectService(0);
+
+// Style Lab
+const slGrid = document.getElementById('stylelab-grid');
+const slImg = document.getElementById('sl-img');
+const slCat = document.getElementById('sl-cat');
+const slName = document.getElementById('sl-name');
+const slDesc = document.getElementById('sl-desc');
+const slPrice = document.getElementById('sl-price');
+const slCta = document.getElementById('sl-cta');
+let activeStyle = 0;
+
+STYLES.forEach((s, i) => {
+  const t = document.createElement('div');
+  t.className = 'style-thumb interactive' + (i === 0 ? ' active' : '');
+  t.innerHTML = `
+    <div class="style-thumb-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <img src="${s.img}" alt="${s.name}"/>
+    <div class="style-thumb-overlay"></div>
+    <div class="style-thumb-info">
+      <div class="style-thumb-cat">${s.cat}</div>
+      <div class="style-thumb-name">${s.name}</div>
+    </div>`;
+  t.addEventListener('click', () => selectStyle(i));
+  slGrid.appendChild(t);
+});
+
+function selectStyle(i) {
+  if (i === activeStyle) return;
+  activeStyle = i;
+  const s = STYLES[i];
+  document.querySelectorAll('.style-thumb').forEach((t, k) => t.classList.toggle('active', k === i));
+
+  // Animated transition: clip-path wipe + opacity
+  const newImg = document.createElement('img');
+  newImg.src = s.img;
+  newImg.alt = s.name;
+  newImg.style.clipPath = 'inset(0 100% 0 0)';
+  newImg.style.transform = 'scale(1.06)';
+  document.getElementById('sl-img-wrap').appendChild(newImg);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    newImg.style.transition = 'clip-path 0.9s cubic-bezier(0.77, 0, 0.175, 1), transform 1.2s cubic-bezier(0.19,1,0.22,1)';
+    newImg.style.clipPath = 'inset(0 0 0 0)';
+    newImg.style.transform = 'scale(1)';
+  });
+
+  setTimeout(() => {
+    // Cleanup old img
+    const wrap = document.getElementById('sl-img-wrap');
+    const imgs = wrap.querySelectorAll('img');
+    if (imgs.length > 1) imgs[0].remove();
+  }, 1000);
+
+  // Text crossfade
+  [slCat, slName, slDesc, slPrice].forEach(el => { el.style.transition = 'opacity 0.3s'; el.style.opacity = '0'; });
+  setTimeout(() => {
+    slCat.textContent = s.cat;
+    slName.textContent = s.name;
+    slDesc.textContent = s.desc;
+    slPrice.textContent = s.price;
+    slCta.href = `https://api.whatsapp.com/send/?phone=593969012964&text=${encodeURIComponent(s.wa)}`;
+    [slCat, slName, slDesc, slPrice].forEach(el => el.style.opacity = '1');
+  }, 300);
+}
+
+// Products
+const productsGrid = document.getElementById('products-grid');
+PRODUCTS.forEach(p => {
+  const url = `https://api.whatsapp.com/send/?phone=593969012964&text=${encodeURIComponent(p.wa)}`;
+  const card = document.createElement('div');
+  card.className = 'product-card tilt';
+  card.dataset.tiltStrength = '5';
+  card.innerHTML = `
+    <div class="product-img"><img src="${p.img}" alt="${p.name}"/></div>
+    <div class="product-info">
+      <div class="product-brand">${p.brand}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-desc">${p.desc}</div>
+      <a href="${url}" target="_blank" rel="noopener" class="btn-primary product-cta interactive">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+        Pedir por WhatsApp
+      </a>
+    </div>`;
+  productsGrid.appendChild(card);
+});
+
+// Social cards
+const socialCardsEl = document.getElementById('social-cards');
+let activeSocial = 0;
+SOCIAL_VIDEOS.forEach((v, i) => {
+  const card = document.createElement('a');
+  card.href = v.url; card.target = '_blank'; card.rel = 'noopener';
+  card.className = 'social-card interactive' + (i === activeSocial ? ' active' : ' inactive');
+  const badgeHtml = v.platform === 'ig'
+    ? `<div class="ig-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg></div>`
+    : `<div class="tt-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></div>`;
+  card.innerHTML = `
+    <img src="${v.thumb}" alt="${v.title}"/>
+    <div class="social-card-overlay"></div>
+    <div class="social-platform">${badgeHtml}</div>
+    <div class="social-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+    <div class="social-meta"><div class="social-title">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
+  card.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.social-card').forEach((c, k) => {
+      c.classList.toggle('active', k === i);
+      c.classList.toggle('inactive', k !== i);
+    });
+    activeSocial = i;
+  });
+  socialCardsEl.appendChild(card);
+});
+
+// Reviews
+const reviewsGridEl = document.getElementById('reviews-grid');
+GOOGLE_REVIEWS.forEach(r => {
+  const card = document.createElement('div');
+  card.className = 'review-card';
+  let stars = '';
+  for (let i = 0; i < r.stars; i++) stars += '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  card.innerHTML = `
+    <div class="review-header">
+      <div class="review-avatar" style="background:${r.color}">${r.initial}</div>
+      <div class="review-meta"><div class="review-name">${r.name}</div><div class="review-date">${r.when}</div></div>
+    </div>
+    <div class="review-stars">${stars}</div>
+    <p class="review-text">"${r.text}"</p>
+    <div class="review-footer">
+      <span class="review-sede">Sede ${r.sede}</span>
+      <span class="review-via">via <svg class="google-g-svg" style="width:12px;height:12px" viewBox="0 0 48 48"><path fill="#4285f4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34a853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#fbbc05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#ea4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Google</span>
+    </div>`;
+  reviewsGridEl.appendChild(card);
+});
+
+/* ============================================================
+   ANIMATIONS — GSAP + Lenis + custom interactions
+   ============================================================ */
+
+// LENIS smooth scroll
+const lenis = new Lenis({
+  duration: 1.15,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+  wheelMultiplier: 1
+});
+function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+requestAnimationFrame(raf);
+
+// Anchor links via Lenis
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href.length > 1) {
+      const t = document.querySelector(href);
+      if (t) { e.preventDefault(); lenis.scrollTo(t, { offset: -20 }); }
+    }
+  });
+});
+
+// GSAP register
+gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.defaults({ toggleActions: 'play none none none' });
+lenis.on('scroll', ScrollTrigger.update);
+
+// Loader sequence
+window.addEventListener('load', () => {
+  const tl = gsap.timeline();
+  tl.to('#loader img', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+    .to('#loader .ld-bar::after', { duration: 0 }) // placeholder
+    .to('#loader .ld-text', { opacity: 1, duration: 0.4 }, '-=0.2');
+
+  // animate ld-bar via inline style trick
+  const ldFill = document.querySelector('#loader .ld-bar');
+  ldFill.style.position = 'relative';
+  const fill = document.createElement('div');
+  fill.style.cssText = 'position:absolute;top:0;left:0;height:100%;width:0;background:#C8B08A;transition: width 1.2s cubic-bezier(0.19,1,0.22,1);';
+  ldFill.appendChild(fill);
+  setTimeout(() => fill.style.width = '100%', 300);
+
+  tl.to('#loader', { opacity: 0, duration: 0.6, delay: 1.4, ease: 'power2.inOut', onComplete: () => document.getElementById('loader').style.display = 'none' });
+
+  // Hero entrance
+  tl.from('.hero-logo', { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
+    .to('.hero-logo', { opacity: 1, duration: 0.4 }, '-=0.6')
+    .from('.hero-kicker', { opacity: 0, y: 12, duration: 0.5 }, '-=0.3')
+    .to('.hero-kicker', { opacity: 1, duration: 0.4 }, '-=0.5')
+    .from('.hero-h1 .reveal-line span', { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.12 }, '-=0.4')
+    .from('.hero-sub', { opacity: 0, y: 12, duration: 0.5 }, '-=0.5')
+    .to('.hero-sub', { opacity: 1, duration: 0.4 }, '-=0.6')
+    .from('.hero-ctas', { opacity: 0, y: 12, duration: 0.5 }, '-=0.4')
+    .to('.hero-ctas', { opacity: 1, duration: 0.4 }, '-=0.6')
+    .from('.hero-stats', { opacity: 0, y: 14, duration: 0.5 }, '-=0.3')
+    .to('.hero-stats', { opacity: 1, duration: 0.4 }, '-=0.6');
+});
+
+// Scroll progress
+gsap.to('#progress', {
+  scaleX: 1, ease: 'none',
+  scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0 }
+});
+
+// Hero parallax video
+gsap.to('#hero-video', {
+  yPercent: 22, ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+});
+gsap.to('.hero-content', {
+  opacity: 0, y: -60, ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+});
+
+// Section titles reveal
+document.querySelectorAll('.section-title').forEach(el => {
+  gsap.from(el, {
+    opacity: 0, y: 40, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' }
+  });
+});
+document.querySelectorAll('.section-label').forEach(el => {
+  gsap.from(el, {
+    opacity: 0, x: -20, duration: 0.8, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 90%' }
+  });
+});
+
+// Quote word reveal
+const quoteEl = document.getElementById('quote-anim');
+const quoteText = quoteEl.innerHTML;
+const splitText = (() => {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = quoteText;
+  let html = '';
+  tmp.childNodes.forEach(node => {
+    if (node.nodeType === 3) {
+      const words = node.textContent.split(/(\s+)/);
+      words.forEach(w => {
+        if (w.trim()) html += `<span class="q-word">${w}</span>`;
+        else html += w;
+      });
+    } else if (node.nodeType === 1) {
+      const words = node.textContent.split(/(\s+)/);
+      words.forEach(w => {
+        if (w.trim()) html += `<span class="q-word ${node.className}">${w}</span>`;
+        else html += w;
+      });
+    }
+  });
+  return html;
+})();
+quoteEl.innerHTML = splitText;
+gsap.to('.q-word', {
+  opacity: 1, duration: 0.04, stagger: 0.04, ease: 'none',
+  scrollTrigger: { trigger: quoteEl, start: 'top 80%', end: 'top 30%', scrub: 0.6 }
+});
+
+// Stats counter
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = parseInt(el.dataset.count);
+  ScrollTrigger.create({
+    trigger: el, start: 'top 85%',
+    onEnter: () => {
+      const obj = { val: 0 };
+      gsap.to(obj, {
+        val: target, duration: 1.6, ease: 'power2.out',
+        onUpdate: () => {
+          const v = Math.floor(obj.val);
+          if (target >= 1000) el.textContent = (v/1000).toFixed(1) + 'K';
+          else el.textContent = v;
+        }
+      });
+    }
+  });
+});
+
+// Rating bars
+document.querySelectorAll('.rating-bar-fill').forEach(el => {
+  const fill = parseFloat(el.dataset.fill);
+  ScrollTrigger.create({
+    trigger: el, start: 'top 90%',
+    onEnter: () => { el.style.transform = `scaleX(${fill})`; }
+  });
+});
+
+// Generic fade-up reveal
+['.location-card', '.product-card', '.review-card', '.style-thumb', '.badge', '.services-tabs button'].forEach(sel => {
+  document.querySelectorAll(sel).forEach((el, i) => {
+    gsap.from(el, {
+      opacity: 0, y: 30, duration: 0.8, ease: 'power3.out',
+      delay: (i % 6) * 0.06,
+      scrollTrigger: { trigger: el, start: 'top 88%' }
+    });
+  });
+});
+
+// Marquee items reveal
+gsap.from('.marquee-item', {
+  opacity: 0, scale: 0.9, duration: 0.8, ease: 'power3.out', stagger: 0.04,
+  scrollTrigger: { trigger: '.marquee-section', start: 'top 80%' }
+});
+
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+let rx = mx, ry = my;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+});
+function tickRing() {
+  rx += (mx - rx) * 0.18;
+  ry += (my - ry) * 0.18;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(tickRing);
+}
+tickRing();
+
+const hoverSelectors = 'a, button, .interactive, .style-thumb, .marquee-item, .service-item, .badge, .tab-pill';
+document.querySelectorAll(hoverSelectors).forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+/* ============================================================
+   3D TILT CARDS
+   ============================================================ */
+document.querySelectorAll('.tilt').forEach(card => {
+  const strength = parseFloat(card.dataset.tiltStrength) || 8;
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(1200px) rotateX(${-y * strength}deg) rotateY(${x * strength}deg) translateZ(0)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform 0.6s cubic-bezier(0.19,1,0.22,1)';
+    card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) translateZ(0)';
+    setTimeout(() => card.style.transition = '', 600);
+  });
+});
+
+/* ============================================================
+   MAGNETIC BUTTONS
+   ============================================================ */
+document.querySelectorAll('.btn-primary, .btn-ghost, .btn-nav').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    btn.style.transform = 'translate(0, 0)';
+    setTimeout(() => btn.style.transition = '', 600);
+  });
+});
+
+/* ============================================================
+   PARALLAX FLOATERS
+   ============================================================ */
+gsap.utils.toArray('.float-deco').forEach((el, i) => {
+  gsap.to(el, {
+    y: (i % 2 === 0) ? -120 : 120,
+    rotation: (i % 2 === 0) ? -8 : 8,
+    ease: 'none',
+    scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: 1 }
+  });
+});
+
+/* ============================================================
+   GOOGLE PLACES INTEGRATION (placeholder)
+   ============================================================
+   To replace the demo reviews with real Google data:
+   1. Create a Google Cloud project, enable Places API.
+   2. Get the place_id of each Mr Brook location.
+   3. From a backend (Node, PHP, etc.), call:
+      https://maps.googleapis.com/maps/api/place/details/json?place_id=PLACE_ID&fields=reviews,rating,user_ratings_total&key=YOUR_KEY
+   4. Inject the JSON response into GOOGLE_REVIEWS / score / count
+      and redraw the review cards using the same template above.
+   ============================================================ */
+</script>
+
+</body>
+</html>

@@ -67,8 +67,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-  <!-- Lenis smooth scroll -->
-  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.45/bundled/lenis.min.js"></script>
+  <!-- Lenis smooth scroll (package renamed from @studio-freight/lenis to lenis) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script>
+    // Fallback to unpkg if jsdelivr fails
+    if (typeof Lenis === 'undefined') {
+      document.write('<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"><\/script>');
+    }
+  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1264,34 +1270,61 @@ GOOGLE_REVIEWS.forEach(r => {
    ANIMATIONS — GSAP + Lenis + custom interactions
    ============================================================ */
 
-// LENIS smooth scroll
-const lenis = new Lenis({
-  duration: 1.15,
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smoothWheel: true,
-  wheelMultiplier: 1
-});
-function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-requestAnimationFrame(raf);
+// LENIS smooth scroll (defensive — page still works if it fails to load)
+let lenis = null;
+try {
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1
+    });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+  }
+} catch (e) { console.warn('Lenis init failed, using native scroll:', e); }
 
-// Anchor links via Lenis
+// Anchor links — Lenis if available, native fallback
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const href = a.getAttribute('href');
     if (href.length > 1) {
       const t = document.querySelector(href);
-      if (t) { e.preventDefault(); lenis.scrollTo(t, { offset: -20 }); }
+      if (t) {
+        e.preventDefault();
+        if (lenis) lenis.scrollTo(t, { offset: -20 });
+        else t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   });
 });
 
-// GSAP register
-gsap.registerPlugin(ScrollTrigger);
-ScrollTrigger.defaults({ toggleActions: 'play none none none' });
-lenis.on('scroll', ScrollTrigger.update);
+// GSAP register (defensive)
+if (typeof gsap !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.defaults({ toggleActions: 'play none none none' });
+  if (lenis) lenis.on('scroll', ScrollTrigger.update);
+}
 
-// Loader sequence
+// SAFETY: hide loader after 4s no matter what (in case scripts fail)
+setTimeout(() => {
+  const ld = document.getElementById('loader');
+  if (ld && ld.style.display !== 'none') {
+    ld.style.transition = 'opacity 0.6s ease';
+    ld.style.opacity = '0';
+    setTimeout(() => ld.style.display = 'none', 700);
+  }
+}, 4000);
+
+// Loader sequence (defensive — only run if GSAP loaded)
 window.addEventListener('load', () => {
+  if (typeof gsap === 'undefined') {
+    // GSAP failed → just hide loader
+    const ld = document.getElementById('loader');
+    if (ld) { ld.style.transition = 'opacity 0.5s'; ld.style.opacity = '0'; setTimeout(() => ld.style.display = 'none', 600); }
+    return;
+  }
   const tl = gsap.timeline();
   tl.to('#loader img', { opacity: 1, duration: 0.4, ease: 'power2.out' })
     .to('#loader .ld-bar::after', { duration: 0 }) // placeholder

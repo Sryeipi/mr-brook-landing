@@ -80,16 +80,27 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --black: #0B0B0D; --dark: #111214; --dark2: #1B1D21; --smoke: #2B2D31;
-      --white: #FFFFFF; --gold: #8A6A4B; --gold-light: #C8B08A;
+      --white: #FFFFFF; --gold: #8A6A4B; --gold-light: #C8B08A; --gold-bright: #D9C19A;
       --serif: 'Cormorant Garamond', serif;
       --sans: 'DM Sans', sans-serif;
       --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+      --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    html { scroll-behavior: auto; }
+    html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; }
     body {
       background: var(--black); color: var(--white);
       font-family: var(--sans);
-      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    /* Improve serif rendering */
+    .section-title, h1, h2, h3, h4, .quote-text, .hero-h1, .lc-name, .sl-name, .sv-cat,
+    .reviews-score, .stylelab-header h2, .footer-cta-text h3, .footer-brand-name,
+    .style-thumb-name, .stylelab-style-name, .concept-stat-val, .stat-val, .hero-stat-val {
+      font-feature-settings: 'kern' 1, 'liga' 1;
+      text-rendering: geometricPrecision;
     }
     a { text-decoration: none; color: inherit; }
     img { display: block; max-width: 100%; }
@@ -216,8 +227,8 @@
       font-weight: 600; line-height: 1.02; letter-spacing: -0.02em; color: #fff;
     }
     .section-title em { color: var(--gold-light); font-style: italic; }
-    .reveal-line { display: inline-block; overflow: hidden; }
-    .reveal-line > span { display: inline-block; transform: translateY(110%); }
+    /* (legacy reveal-line — kept as plain inline span for stability) */
+    .reveal-line, .reveal-line > span { display: inline; }
 
     /* HERO */
     #hero {
@@ -227,41 +238,95 @@
     }
     #hero-video {
       position: absolute; inset: 0; width: 100%; height: 110%;
-      object-fit: cover; opacity: 0.45; z-index: 0; top: -5%;
+      object-fit: cover; opacity: 0.5; z-index: 0; top: -5%;
+      will-change: transform;
     }
-    .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(11,11,13,0.55) 0%, rgba(11,11,13,0.15) 40%, rgba(11,11,13,0.9) 100%); }
-    .hero-grain { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.4; background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,13,0.6) 100%); }
+    .hero-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(11,11,13,0.45) 0%, rgba(11,11,13,0.25) 30%, rgba(11,11,13,0.55) 60%, rgba(11,11,13,0.95) 100%); }
+    .hero-vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,13,0.55) 100%); }
     .hero-content { position: relative; z-index: 5; text-align: center; padding: 0 24px; max-width: 920px; width: 100%; }
-    .hero-logo { width: 64px; height: 64px; filter: brightness(10) drop-shadow(0 0 24px rgba(200,176,138,0.4)); margin: 0 auto 22px; opacity: 0; }
-    .hero-kicker { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 22px; opacity: 0; }
-    .hero-h1 { font-family: var(--serif); font-size: clamp(54px, 9vw, 110px); font-weight: 600; line-height: 0.92; letter-spacing: -0.025em; color: #fff; margin-bottom: 30px; }
-    .hero-h1 em { color: var(--gold-light); font-style: italic; }
-    .hero-sub { font-size: clamp(14px, 1.7vw, 17px); color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 38px; line-height: 1.6; opacity: 0; }
-    .hero-ctas { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; opacity: 0; }
-    .hero-stats { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 56px; opacity: 0; }
-    .hero-stat { padding: 14px 26px; border-left: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .hero-logo {
+      height: 70px; width: auto; max-width: 90px;
+      filter: brightness(10) drop-shadow(0 0 28px rgba(200,176,138,0.55));
+      margin: 0 auto 24px; display: block;
+      will-change: opacity, transform;
+      object-fit: contain;
+    }
+    .hero-kicker {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.32em;
+      text-transform: uppercase; color: var(--gold-bright);
+      margin-bottom: 22px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    }
+    .hero-h1 {
+      font-family: var(--serif);
+      font-size: clamp(56px, 9vw, 116px);
+      font-weight: 600; line-height: 0.94;
+      letter-spacing: -0.028em; color: #fff;
+      margin-bottom: 28px;
+      text-shadow: 0 4px 28px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.3);
+      will-change: opacity, transform;
+    }
+    .hero-h1 em { color: var(--gold-bright); font-style: italic; font-weight: 600; }
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: rgba(255,255,255,0.85);
+      max-width: 540px; margin: 0 auto 40px;
+      line-height: 1.6; font-weight: 400;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+    }
+    .hero-sub strong { color: #fff; font-weight: 600; }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      margin-top: 56px;
+      padding: 18px 24px;
+      background: rgba(11,11,13,0.35);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.06);
+      width: fit-content; margin-left: auto; margin-right: auto;
+    }
+    /* Initial state for GSAP entrance — applied only while JS controls them */
+    .js-hero-anim .hero-logo,
+    .js-hero-anim .hero-kicker,
+    .js-hero-anim .hero-h1,
+    .js-hero-anim .hero-sub,
+    .js-hero-anim .hero-ctas,
+    .js-hero-anim .hero-stats { opacity: 0; }
+    .hero-stat { padding: 6px 22px; border-left: 1px solid rgba(255,255,255,0.1); text-align: center; }
     .hero-stat:first-child { border-left: none; }
-    .hero-stat-val { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--gold-light); }
-    .hero-stat-lbl { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-top: 3px; }
+    .hero-stat-val { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--gold-bright); line-height: 1; }
+    .hero-stat-lbl { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-top: 4px; }
     .scroll-line { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 5; }
-    .scroll-line-bar { width: 1px; height: 44px; background: linear-gradient(to bottom, rgba(200,176,138,0.5), transparent); animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+    .scroll-line-bar { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(200,176,138,0.65), transparent); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.35} 50%{opacity:1} }
 
-    /* MARQUEE */
-    .marquee-section { background: var(--black); padding: 60px 0 50px; overflow: hidden; }
+    /* MARQUEE — single-row clean carousel, photos only */
+    .marquee-section { background: var(--black); padding: 56px 0 56px; overflow: hidden; }
     .marquee-row { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
-    .marquee-row + .marquee-row { margin-top: 14px; }
-    .marquee-track { display: flex; width: max-content; gap: 14px; }
-    .marquee-track-a { animation: mqL 50s linear infinite; }
-    .marquee-track-b { animation: mqR 60s linear infinite; }
+    .marquee-track { display: flex; width: max-content; gap: 18px; will-change: transform; }
+    .marquee-track-a { animation: mqL 60s linear infinite; }
     .marquee-track:hover { animation-play-state: paused; }
     @keyframes mqL { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-    @keyframes mqR { from{transform:translateX(-50%)} to{transform:translateX(0)} }
-    .marquee-item { flex-shrink: 0; width: 188px; height: 260px; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid rgba(138,106,75,0.1); transition: transform 0.5s var(--ease-out); }
-    .marquee-item:hover { transform: scale(1.03) rotate(-1deg); border-color: rgba(200,176,138,0.4); }
-    .marquee-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .marquee-item {
+      flex-shrink: 0; width: 240px; height: 340px;
+      border-radius: 18px; overflow: hidden; position: relative;
+      border: 1px solid rgba(200,176,138,0.12);
+      transition: transform 0.5s var(--ease-out), border-color 0.4s, box-shadow 0.4s;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .marquee-item:hover {
+      transform: scale(1.04) translateY(-4px);
+      border-color: rgba(200,176,138,0.45);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,176,138,0.15);
+    }
+    .marquee-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s var(--ease-out); }
     .marquee-item:hover img { transform: scale(1.08); }
-    .marquee-item-label { position: absolute; bottom: 10px; left: 12px; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+    @media (max-width: 600px) {
+      .marquee-item { width: 180px; height: 260px; }
+      .marquee-track-a { animation-duration: 45s; }
+    }
 
     /* STATS */
     .stats-section { background: var(--dark2); border-top: 1px solid rgba(138,106,75,0.1); border-bottom: 1px solid rgba(138,106,75,0.1); padding: 56px 40px; }
@@ -328,7 +393,20 @@
     /* SERVICES */
     .services-section { background: var(--black); padding: 110px 40px; border-top: 1px solid rgba(138,106,75,0.08); position: relative; overflow: hidden; }
     .services-inner { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
-    .float-deco { position: absolute; pointer-events: none; z-index: 0; opacity: 0.08; }
+    /* Floating decorative items — static, just visual */
+    .float-deco {
+      position: absolute; pointer-events: none; z-index: 0;
+      opacity: 0.18;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.6));
+      will-change: transform;
+    }
+    /* Sede selector buttons */
+    .services-sede-btns .btn-primary, .services-sede-btns .btn-ghost {
+      flex: 1; min-width: 140px; justify-content: center;
+      transition: transform 0.4s var(--ease-out), background 0.3s, border-color 0.3s, box-shadow 0.4s, color 0.3s;
+    }
+    .services-sede-btns .btn-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 28px rgba(138,106,75,0.5); }
+    .services-sede-btns .btn-ghost:hover { transform: translateY(-3px); }
     .services-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 40px 0; }
     .tab-pill { font-size: 12px; letter-spacing: 0.04em; padding: 10px 18px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.42); transition: all 0.22s; font-weight: 400; }
     .tab-pill:hover { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.25); }
@@ -349,19 +427,148 @@
     .services-sede-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin: 28px 0 12px; }
     .services-sede-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* STYLE LAB (interactive) */
-    .stylelab-section { background: var(--dark2); padding: 100px 40px 110px; position: relative; overflow: hidden; border-top: 1px solid rgba(138,106,75,0.08); }
-    .stylelab-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
-    .stylelab-header { text-align: center; max-width: 740px; margin: 0 auto 60px; }
-    .stylelab-header .section-label { justify-content: center; }
-    .stylelab-header .section-label::before { display: none; }
-    .stylelab-header .section-label span { color: var(--gold-light); }
-    .stylelab-header h2 { font-family: var(--serif); font-size: clamp(40px, 5.5vw, 70px); font-weight: 600; line-height: 1; letter-spacing: -0.025em; margin-bottom: 18px; }
-    .stylelab-header h2 em { color: var(--gold-light); font-style: italic; }
-    .stylelab-header p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+    /* FACE SCANNER — final-of-page interactive */
+    .scanner-section { background: var(--dark2); padding: 110px 40px; position: relative; overflow: hidden; border-top: 1px solid rgba(138,106,75,0.1); }
+    .scanner-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+    .scanner-header { text-align: center; max-width: 760px; margin: 0 auto 50px; }
+    .scanner-header .section-label { justify-content: center; }
+    .scanner-header .section-label::before { display: none; }
+    .scanner-header .section-label span { color: var(--gold-bright); }
+    .scanner-header h2 { font-family: var(--serif); font-size: clamp(40px, 5.5vw, 72px); font-weight: 600; line-height: 1; letter-spacing: -0.025em; margin-bottom: 20px; }
+    .scanner-header h2 em { color: var(--gold-bright); font-style: italic; }
+    .scanner-header p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 540px; margin: 0 auto; }
 
-    .stylelab-stage { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; min-height: 640px; }
+    .scanner-stage {
+      max-width: 720px; margin: 0 auto;
+      background: var(--dark); border-radius: 32px; padding: 48px;
+      border: 1px solid rgba(138,106,75,0.18);
+      position: relative; overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+    }
+    .scanner-stage::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(circle at 50% 0%, rgba(200,176,138,0.12), transparent 50%);
+    }
 
+    /* Step views */
+    .scanner-step { position: relative; z-index: 1; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    .scanner-cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+    .scanner-tip { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 28px; max-width: 480px; text-align: center; line-height: 1.6; }
+
+    .scanner-icon-big {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(200,176,138,0.18), rgba(138,106,75,0.05));
+      border: 1px solid rgba(200,176,138,0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      color: var(--gold-bright);
+      animation: scanIconPulse 2.6s ease-in-out infinite;
+    }
+    @keyframes scanIconPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(200,176,138,0.35); }
+      50% { box-shadow: 0 0 0 18px rgba(200,176,138,0); }
+    }
+
+    .scanner-preview-wrap {
+      width: 100%; max-width: 360px; aspect-ratio: 4/5;
+      border-radius: 20px; overflow: hidden;
+      position: relative; margin: 0 auto 28px;
+      border: 1.5px solid rgba(200,176,138,0.25);
+      background: var(--black);
+    }
+    .scanner-preview-wrap img, .scanner-preview-wrap video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .scanner-scanline {
+      position: absolute; left: 0; right: 0; top: 0; height: 4px;
+      background: linear-gradient(to bottom, transparent, var(--gold-bright), transparent);
+      box-shadow: 0 0 16px var(--gold-bright);
+      animation: scanline 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes scanline {
+      0%, 100% { top: 0; opacity: 0; }
+      10% { opacity: 1; }
+      50% { top: 100%; opacity: 1; }
+      90% { opacity: 0; }
+    }
+    .scanner-grid-overlay {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(200,176,138,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(200,176,138,0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mix-blend-mode: overlay;
+    }
+    .scanner-corners {
+      position: absolute; inset: 12px; pointer-events: none;
+    }
+    .scanner-corners::before, .scanner-corners::after {
+      content: ''; position: absolute; width: 28px; height: 28px;
+      border: 2px solid var(--gold-bright);
+    }
+    .scanner-corners::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+    .scanner-corners::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+    .scanner-progress {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold-bright); margin-top: 8px; text-align: center;
+    }
+
+    .scanner-shape-visual {
+      width: 130px; height: 170px; margin: 0 auto 22px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold-bright);
+      filter: drop-shadow(0 0 24px rgba(200,176,138,0.35));
+      animation: shapeReveal 0.8s var(--ease-out) both;
+    }
+    .scanner-shape-visual svg { width: 100%; height: 100%; }
+    @keyframes shapeReveal {
+      from { opacity: 0; transform: scale(0.6) rotate(-6deg); }
+      to { opacity: 1; transform: scale(1) rotate(0); }
+    }
+    .scanner-shape-tag {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 8px 18px; border-radius: 100px;
+      background: linear-gradient(135deg, rgba(200,176,138,0.18), rgba(138,106,75,0.06));
+      border: 1px solid rgba(200,176,138,0.35);
+      margin-bottom: 22px;
+    }
+    .shape-tag-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-bright); font-weight: 600; }
+    .scanner-result h3 {
+      font-family: var(--serif); font-size: clamp(30px, 3.8vw, 46px);
+      font-weight: 600; line-height: 1.05; margin-bottom: 18px;
+      letter-spacing: -0.02em; color: #fff;
+    }
+    .scanner-result p {
+      font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.7);
+      max-width: 540px; margin: 0 auto 32px;
+    }
+    .scanner-final-cta {
+      background: linear-gradient(135deg, rgba(200,176,138,0.1), rgba(138,106,75,0.04));
+      border: 1px solid rgba(200,176,138,0.2);
+      border-radius: 18px; padding: 22px 26px;
+      margin: 0 auto 26px; max-width: 520px;
+    }
+    .scanner-final-msg {
+      font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.85);
+      margin: 0;
+    }
+    .scanner-final-msg strong { color: var(--gold-bright); font-weight: 600; }
+
+    /* hidden by default */
+    .scanner-step { display: none; }
+    .scanner-step.active { display: flex; animation: stepFadeIn 0.5s var(--ease-out); }
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .scanner-stage { padding: 32px 22px; border-radius: 24px; }
+      .scanner-cuts { grid-template-columns: 1fr; }
+    }
+
+    /* (legacy stylelab CSS — unused but kept harmless to avoid orphan refs) */
     .stylelab-display {
       position: relative; border-radius: 24px; overflow: hidden;
       background: var(--black); aspect-ratio: 4/5; max-height: 720px;
@@ -432,9 +639,29 @@
       transform-style: preserve-3d; will-change: transform;
     }
     .product-card:hover { transform: translateY(-6px); border-color: rgba(200,176,138,0.35); box-shadow: 0 24px 60px -20px rgba(0,0,0,0.7); }
-    .product-img { height: 200px; background: var(--dark2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-    .product-img img { width: 140px; height: 140px; object-fit: contain; opacity: 0.7; transition: transform 0.6s var(--ease-out); filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); }
-    .product-card:hover .product-img img { transform: scale(1.1) rotate(-2deg); }
+    .product-img {
+      height: 220px;
+      background: radial-gradient(circle at center, rgba(138,106,75,0.12) 0%, var(--dark) 70%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .product-img::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 60%, rgba(200,176,138,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .product-img img {
+      width: 160px; height: 160px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 14px 32px rgba(0,0,0,0.7)) drop-shadow(0 0 24px rgba(200,176,138,0.15)) brightness(1.05);
+      transition: transform 0.6s var(--ease-out), filter 0.4s;
+      will-change: transform;
+    }
+    .product-card:hover .product-img img {
+      transform: scale(1.12) rotate(-3deg);
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8)) drop-shadow(0 0 32px rgba(200,176,138,0.25)) brightness(1.1);
+    }
     .product-info { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
     .product-brand { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
     .product-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 6px; line-height: 1.3; }
@@ -514,11 +741,18 @@
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.04); padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .footer-bottom span { font-size: 11px; color: rgba(255,255,255,0.18); }
 
-    /* WHATSAPP FLOAT */
-    #wa-float { position: fixed; bottom: 28px; right: 28px; z-index: 900; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.4); transition: transform 0.3s var(--ease-out), box-shadow 0.3s; }
-    #wa-float:hover { transform: scale(1.12); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
-    #wa-float::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #25D366; animation: waPulse 2.4s ease-out infinite; }
-    @keyframes waPulse { 0%{transform:scale(0.95);opacity:0.7} 100%{transform:scale(1.5);opacity:0} }
+    /* FLOAT BUTTONS — clean, no pulse */
+    .float-btn {
+      position: fixed; right: 24px; z-index: 900;
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s var(--ease-out), box-shadow 0.3s;
+      will-change: transform;
+    }
+    #wa-float { bottom: 24px; background: #25D366; box-shadow: 0 6px 22px rgba(37,211,102,0.42); }
+    #wa-float:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 32px rgba(37,211,102,0.55); }
+    #ig-float { bottom: 90px; background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); box-shadow: 0 6px 22px rgba(220,39,67,0.4); }
+    #ig-float:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 32px rgba(220,39,67,0.55); }
 
     /* RESPONSIVE */
     @media (max-width: 980px) {
@@ -582,13 +816,6 @@
   <a href="#sedes" class="nav-link">Sedes</a>
   <a href="#reviews" class="nav-link">Reviews</a>
   <div class="nav-sep"></div>
-  <a href="https://www.instagram.com/mrbrook.bs/" target="_blank" rel="noopener" class="nav-social" aria-label="Instagram">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>
-  </a>
-  <a href="https://www.tiktok.com/@mrbrook.bs" target="_blank" rel="noopener" class="nav-social" aria-label="TikTok">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
-  </a>
-  <div class="nav-sep"></div>
   <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-nav">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
     Reservar
@@ -601,7 +828,7 @@
     <source src="assets/video/hero.mp4" type="video/mp4" />
   </video>
   <div class="hero-overlay"></div>
-  <div class="hero-grain"></div>
+  <div class="hero-vignette"></div>
 
   <div class="hero-content">
     <img class="hero-logo" src="assets/logos/logo-01.png" alt="" />
@@ -633,14 +860,11 @@
   <div class="scroll-line"><div class="scroll-line-bar"></div></div>
 </section>
 
-<!-- MARQUEE -->
+<!-- MARQUEE — single-row carousel of real photos, no labels -->
 <section class="marquee-section">
-  <div class="section-label" style="padding: 0 40px 24px"><span>Felices siempre por atenderte</span></div>
+  <div class="section-label" style="padding: 0 40px 28px"><span>Felices siempre por atenderte</span></div>
   <div class="marquee-row">
     <div class="marquee-track marquee-track-a" id="mq-a"></div>
-  </div>
-  <div class="marquee-row">
-    <div class="marquee-track marquee-track-b" id="mq-b"></div>
   </div>
 </section>
 
@@ -664,43 +888,19 @@
   <div class="quote-inner">
     <svg class="quote-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
     <blockquote class="quote-text" id="quote-anim">
-      "Te ayudamos a encontrar el estilo <span class="q-word gold">que va contigo.</span>"
+      "Especialistas en encontrar el estilo <span class="q-word gold">que va contigo.</span>"
     </blockquote>
     <p class="quote-byline">— Mr Brook Barber Shop & SPA</p>
     <div class="quote-badges">
       <span class="badge">Cortes</span>
       <span class="badge">Barba</span>
-      <span class="badge">Hair SPA</span>
-      <span class="badge">Coffee</span>
       <span class="badge">Color</span>
-      <span class="badge">Uñas</span>
-      <span class="badge">Rizos</span>
+      <span class="badge">Platinado</span>
+      <span class="badge">Hair SPA</span>
+      <span class="badge">Permanentes</span>
+      <span class="badge">Alisados</span>
       <span class="badge">Faciales</span>
-    </div>
-  </div>
-</section>
-
-<!-- CONCEPT (3D brand showcase) -->
-<section class="concept-section">
-  <div class="concept-inner">
-    <div class="concept-text">
-      <div class="section-label"><span>El concepto Mr Brook</span></div>
-      <h2 class="section-title">No es una barbería.<br/><em>Es un puerto.</em></h2>
-      <p>Mr Brook nació con una bandera pirata clavada arriba del sillón. Madera oscura, luz cálida, café recién hecho y herramientas de capitán. La filosofía: el cabello se trabaja desde la raíz, y si te quedas, te invitamos un café.</p>
-      <p>Dos sedes en Guayaquil, una tripulación de barberos certificados, y una experiencia que se ve en el resultado y se siente en el lugar.</p>
-      <div class="concept-stats">
-        <div class="concept-stat"><div class="concept-stat-val">2026</div><div class="concept-stat-lbl">Apertura La Joya</div></div>
-        <div class="concept-stat"><div class="concept-stat-val">9</div><div class="concept-stat-lbl">Categorías de servicio</div></div>
-        <div class="concept-stat"><div class="concept-stat-val">5.0★</div><div class="concept-stat-lbl">Google Rating</div></div>
-      </div>
-    </div>
-    <div class="concept-visual tilt" data-tilt-strength="6">
-      <div class="concept-render-grid"></div>
-      <div class="concept-render-bg"></div>
-      <div class="concept-render">
-        <img src="assets/render/shop-balcony.png" alt="Concepto Mr Brook · render 3D"/>
-      </div>
-      <div class="concept-secondary"><img src="assets/render/shop-front.png" alt=""/></div>
+      <span class="badge">Uñas</span>
     </div>
   </div>
 </section>
@@ -762,11 +962,11 @@ Domingo: 10:00 – 17:30</p>
 
 <!-- SERVICES -->
 <section id="servicios" class="services-section">
-  <img class="float-deco" src="assets/render/scissors-pro.png" style="left:-60px; top:10%; width:220px;"/>
-  <img class="float-deco" src="assets/render/tools-kit.png" style="right:-60px; bottom:10%; width:260px;"/>
+  <img class="float-deco" src="assets/render/scissors-pro.png" alt="" style="left:-90px; top:8%; width:340px;"/>
+  <img class="float-deco" src="assets/render/tools-kit.png" alt="" style="right:-90px; bottom:8%; width:380px;"/>
   <div class="services-inner">
     <div class="section-label"><span>Catálogo Mr Brook</span></div>
-    <h2 class="section-title">Todo lo que hacemos,<br/><em>lo hacemos capo.</em></h2>
+    <h2 class="section-title">Estos son los servicios<br/><em>que ofrecemos.</em></h2>
     <div class="services-tabs" id="services-tabs"></div>
     <div class="services-grid">
       <div>
@@ -789,44 +989,10 @@ Domingo: 10:00 – 17:30</p>
   </div>
 </section>
 
-<!-- STYLE LAB (Interactive) -->
-<section id="estilos" class="stylelab-section">
-  <img class="float-deco" src="assets/generated/scissors.png" style="left:-80px; top:8%; width:240px; opacity: 0.06;"/>
-  <div class="stylelab-inner">
-    <div class="stylelab-header">
-      <div class="section-label"><span>Style Lab · try-on en vivo</span></div>
-      <h2>Tu cabeza,<br/><em>siete looks.</em></h2>
-      <p>Mismo modelo, siete estilos reales que salen de Mr Brook. Tocá cada thumb y mirá cómo cambia el look completo. El que te late, lo reservamos.</p>
-    </div>
-
-    <div class="stylelab-stage">
-      <!-- Display -->
-      <div class="stylelab-display">
-        <div class="sl-floating-tag"><span class="lab-dot"></span> Try-on en vivo</div>
-        <div class="sl-img-wrap" id="sl-img-wrap">
-          <img id="sl-img" src="assets/styles/01-textured-crop.png" alt="Modelo Mr Brook · Textured Crop"/>
-        </div>
-        <div class="sl-overlay"></div>
-        <div class="sl-info">
-          <div class="sl-cat" id="sl-cat">Textured Crop</div>
-          <h3 class="sl-name" id="sl-name">Textured Crop · Fade</h3>
-          <p class="sl-desc" id="sl-desc">El corte estrella de Mr Brook. Textura arriba, fade limpio a los lados. El que se llevan los que ya saben.</p>
-          <div class="sl-row">
-            <div class="sl-price" id="sl-price">desde $15</div>
-            <a id="sl-cta" href="https://api.whatsapp.com/send/?phone=593969012964&text=Hola%20Mr%20Brook!%20Vi%20el%20Textured%20Crop%20en%20la%20web%20y%20quiero%20reservar." target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:12px 22px">Reservar este look</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Grid -->
-      <div class="stylelab-grid" id="stylelab-grid"></div>
-    </div>
-  </div>
-</section>
 
 <!-- PRODUCTS -->
 <section class="products-section">
-  <img class="float-deco" src="assets/generated/tools-kit.png" style="right:-80px; top:6%; width:300px; transform:rotate(15deg);"/>
+  <img class="float-deco" src="assets/render/tools-kit.png" alt="" style="right:-100px; top:6%; width:380px;"/>
   <div class="products-inner">
     <div class="products-head">
       <div>
@@ -901,20 +1067,88 @@ Domingo: 10:00 – 17:30</p>
   </div>
 </section>
 
+<!-- FACE SCANNER — final interactive: detect face shape and recommend cuts -->
+<section id="estilos" class="scanner-section">
+  <img class="float-deco" src="assets/render/scissors-pro.png" alt="" style="left:-110px; top:8%; width:380px;"/>
+  <img class="float-deco" src="assets/render/tools-kit.png" alt="" style="right:-110px; bottom:6%; width:400px;"/>
+  <div class="scanner-inner">
+    <div class="scanner-header">
+      <div class="section-label"><span>Style Detector · IA</span></div>
+      <h2>Escaneá tu rostro,<br/><em>te decimos qué corte va.</em></h2>
+      <p>Sube una foto frontal y nuestro detector analiza tu forma de rostro para recomendarte los cortes que mejor te van. La asesoría completa la hace nuestra tripulación cuando vienes a la sede.</p>
+    </div>
+
+    <div class="scanner-stage">
+      <!-- STEP 1: Intro -->
+      <div class="scanner-step active" data-step="intro">
+        <div class="scanner-icon-big">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="11" r="3"/><path d="M7 17.5c.5-2 2.5-3 5-3s4.5 1 5 3"/></svg>
+        </div>
+        <h3 style="font-family: var(--serif); font-size: clamp(24px, 3vw, 34px); font-weight: 600; text-align: center; margin-bottom: 12px; line-height: 1.1;">Escaneá tu rostro <em style="color: var(--gold-bright); font-style: italic;">aquí</em></h3>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.5); max-width: 420px; text-align: center; margin: 0 auto 26px; line-height: 1.6;">Mejor con una foto vertical, frontal, con buena luz. Tu foto se procesa solo en tu navegador — nunca se sube a ningún servidor.</p>
+        <div class="scanner-cta-row">
+          <button class="btn-primary interactive" id="scanner-btn-upload">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Subir foto
+          </button>
+          <button class="btn-ghost interactive" id="scanner-btn-camera">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Usar cámara
+          </button>
+        </div>
+        <input type="file" id="scanner-file" accept="image/*" style="display:none"/>
+        <p class="scanner-tip">Procesamiento 100% local · Cero datos enviados · Recomendación basada en geometría facial</p>
+      </div>
+
+      <!-- STEP 2: Analyzing -->
+      <div class="scanner-step" data-step="analyzing">
+        <div class="scanner-preview-wrap">
+          <img id="scanner-preview-img" src="" alt="Preview"/>
+          <video id="scanner-preview-video" style="display:none" autoplay playsinline muted></video>
+          <div class="scanner-grid-overlay"></div>
+          <div class="scanner-scanline"></div>
+          <div class="scanner-corners"></div>
+        </div>
+        <div class="scanner-progress" id="scanner-progress">Analizando geometría facial…</div>
+      </div>
+
+      <!-- STEP 3: Result -->
+      <div class="scanner-step" data-step="result" style="text-align: center;">
+        <div class="scanner-shape-visual" id="result-svg"></div>
+        <div class="scanner-shape-tag">
+          <span class="shape-tag-label" id="result-short">El rostro más versátil</span>
+        </div>
+        <div class="scanner-result">
+          <h3 id="result-title">Tienes un rostro <em id="result-shape" style="color: var(--gold-bright); font-style: italic;">Ovalado</em></h3>
+          <p id="result-desc">Lorem ipsum descripción detallada del tipo de rostro detectado.</p>
+        </div>
+        <div class="scanner-final-cta">
+          <p class="scanner-final-msg">En Mr Brook te recomendamos los <strong>mejores cortes basados en tu tipo de rostro</strong>. Te esperamos en sede para una asesoría completa con nuestra tripulación.</p>
+        </div>
+        <div class="scanner-cta-row">
+          <a id="scanner-result-cta" href="https://api.whatsapp.com/send/?phone=593969012964&text=Hola!%20Hice%20el%20scanner%20de%20rostro%20en%20la%20web%20y%20quiero%20reservar%20una%20consulta." target="_blank" rel="noopener" class="btn-primary interactive">
+            Reservar consulta en Mr Brook
+          </a>
+          <button class="btn-ghost interactive" id="scanner-btn-retry">Probar otra foto</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Error -->
+      <div class="scanner-step" data-step="error" style="text-align: center;">
+        <div class="scanner-icon-big" style="color: #ff8a4b; border-color: rgba(255,138,75,0.4); background: linear-gradient(135deg, rgba(255,138,75,0.18), rgba(138,75,75,0.05));">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h3 style="font-family: var(--serif); font-size: 26px; font-weight: 600; margin-bottom: 12px;">No detectamos un rostro</h3>
+        <p id="scanner-error-msg" style="font-size: 13px; color: rgba(255,255,255,0.55); max-width: 380px; text-align: center; margin: 0 auto 24px; line-height: 1.6;">Probá con una foto donde tu rostro esté centrado, mirando al frente y con buena iluminación.</p>
+        <button class="btn-primary interactive" id="scanner-btn-back">Volver a intentar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-cta">
-      <div class="footer-cta-text">
-        <h3>Elegí tu sede<br/><em>y salís más bacán.</em></h3>
-        <p>Reservá en cualquiera de nuestras dos sedes en Guayaquil. Te respondemos por WhatsApp al toque.</p>
-      </div>
-      <div class="footer-cta-btns">
-        <a href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" class="btn-primary">Reservar Urdesa</a>
-        <a href="https://api.whatsapp.com/message/UC2TTGZTJAXOB1?autoload=1" target="_blank" rel="noopener" class="btn-primary">Reservar La Joya</a>
-      </div>
-    </div>
-
     <div class="footer-grid">
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
@@ -960,7 +1194,11 @@ Domingo: 10:00 – 17:30</p>
   </div>
 </footer>
 
-<a id="wa-float" href="https://linktr.ee/MrBrook.bs" target="_blank" rel="noopener" aria-label="Reservar por WhatsApp">
+<!-- Float buttons -->
+<a id="ig-float" class="float-btn" href="https://ig.me/m/mrbrook.bs" target="_blank" rel="noopener" aria-label="Enviar DM en Instagram" title="DM Instagram">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="white"/></svg>
+</a>
+<a id="wa-float" class="float-btn" href="https://api.whatsapp.com/send/?phone=593969012964" target="_blank" rel="noopener" aria-label="Reservar por WhatsApp" title="Reservar por WhatsApp">
   <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
 </a>
 
@@ -968,19 +1206,18 @@ Domingo: 10:00 – 17:30</p>
 /* ============================================================
    DATA
    ============================================================ */
+// Solo fotos reales del local, sin labels
 const MARQUEE = [
-  { src: 'assets/photos/foto-01.jpg', label: 'Tripulación' },
-  { src: 'assets/photos/foto-02.jpg', label: 'Proceso' },
-  { src: 'assets/photos/foto-03.jpg', label: 'Coffee' },
-  { src: 'assets/photos/foto-04.jpg', label: 'Sede' },
-  { src: 'assets/photos/foto-05.jpg', label: 'Uñas' },
-  { src: 'assets/photos/foto-06.jpg', label: 'Hair SPA' },
-  { src: 'assets/photos/foto-07.jpg', label: 'Coffee' },
-  { src: 'assets/photos/foto-08.jpg', label: 'SPA' },
-  { src: 'assets/generated/haircut-side.png', label: 'Corte' },
-  { src: 'assets/generated/hair-spa-wash.png', label: 'Hair SPA' },
-  { src: 'assets/generated/curly-hair.png', label: 'Ondas' },
-  { src: 'assets/generated/beard-razor.png', label: 'Barba' }
+  'assets/photos/foto-01.jpg',
+  'assets/photos/foto-02.jpg',
+  'assets/photos/foto-03.jpg',
+  'assets/photos/foto-04.jpg',
+  'assets/photos/foto-05.jpg',
+  'assets/photos/foto-06.jpg',
+  'assets/photos/foto-07.jpg',
+  'assets/photos/foto-08.jpg',
+  'assets/photos/foto-09.jpg',
+  'assets/photos/foto-10.jpg'
 ];
 
 const SERVICE_GROUPS = [
@@ -1025,23 +1262,49 @@ const SERVICE_GROUPS = [
     { name: 'Mechas', price: 'desde $60', desc: 'Highlights libres o papel' },
     { name: 'Platinado', price: 'desde $100', desc: 'Decoloración total' },
     { name: 'Platinado premium', price: 'desde $150+', desc: 'Doble decoloración' }
-  ]},
-  { category: 'Coffee', img: 'assets/photos/foto-03.jpg', note: 'Sede Urdesa', items: [
-    { name: 'Café Mr Brook', price: 'consultar', desc: 'Espresso, frappé y más' },
-    { name: 'Snacks & bebidas', price: 'consultar', desc: 'Mientras esperás o después' }
   ]}
 ];
 
-// Mismo modelo, 7 variantes de corte/color/barba — Style Lab try-on real
-const STYLES = [
-  { cat: 'Textured Crop', name: 'Textured Crop · Fade', price: 'desde $15', img: 'assets/styles/01-textured-crop.png', desc: 'El corte estrella de Mr Brook. Textura arriba, fade limpio a los lados. El que se llevan los que ya saben.', wa: 'Hola Mr Brook! Vi el Textured Crop en la web y quiero reservar.' },
-  { cat: 'Buzz Cut', name: 'Buzz · Skin Fade', price: 'desde $12', img: 'assets/styles/02-buzz-fade.png', desc: 'Cero rollo, máxima limpieza. Buzz al ras con skin fade. Sale en 25 minutos.', wa: 'Hola Mr Brook! Quiero el Buzz · Skin Fade.' },
-  { cat: 'Mullet', name: 'Mullet Permanente', price: 'desde $50', img: 'assets/styles/03-mullet-perm.png', desc: 'Mullet con permanente coreana. La tendencia que no para de subir. Con cita previa.', wa: 'Hola Mr Brook! Me interesa el Mullet con permanente.' },
-  { cat: 'Rizos', name: 'Permanente Tipo 2B', price: 'desde $40', img: 'assets/styles/04-curly-top.png', desc: 'Permanente coreana ondas tipo 2B. Textura definida que dura semanas. La firma Mr Brook.', wa: 'Hola Mr Brook! Quiero la permanente tipo 2B.' },
-  { cat: 'Platinado', name: 'Platinado Premium', price: 'desde $100', img: 'assets/styles/05-platinum.png', desc: 'Decoloración total + matización. Doble proceso para platinado parejo de revista. Con cita.', wa: 'Hola Mr Brook! Quiero info del platinado premium.' },
-  { cat: 'Color', name: 'Cobre Texturizado', price: 'desde $60', img: 'assets/styles/06-copper.png', desc: 'Color cobre con corte texturizado y high fade. Para los que vienen con personalidad.', wa: 'Hola Mr Brook! Me interesa el cobre texturizado.' },
-  { cat: 'Barba', name: 'Full Beard · Diseño', price: 'desde $13', img: 'assets/styles/07-beard-fade.png', desc: 'Corte clásico + perfilado completo de barba. El combo que cambia la cara.', wa: 'Hola Mr Brook! Quiero el combo corte + barba.' }
-];
+// Forma de rostro detectada — sin imágenes de cortes, solo visual del shape + descripción
+// SVG paths para representar cada forma facial visualmente
+const FACE_SHAPES = {
+  oval: {
+    label: 'Ovalado',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="65" rx="35" ry="55" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'El rostro más versátil',
+    desc: 'Tu rostro tiene proporciones equilibradas: el ancho de la frente, los pómulos y la mandíbula están en armonía, y la longitud es ligeramente mayor al ancho. Esta es considerada la forma más balanceada — casi cualquier corte funciona, pero hay variantes que te van a hacer brillar más que otras.'
+  },
+  round: {
+    label: 'Redondo',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="65" r="48" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Suave y juvenil',
+    desc: 'Tu rostro tiene ancho y longitud similares, con curvas suaves en mejillas y mandíbula. Visualmente da una sensación juvenil y amable. Los cortes ideales para vos son los que agregan altura y estructura, alargando ópticamente la cara.'
+  },
+  square: {
+    label: 'Cuadrado',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="14" width="72" height="102" rx="14" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Mandíbula marcada',
+    desc: 'Tu rostro tiene una mandíbula angular y bien definida, con frente y pómulos del mismo ancho. Es una estructura fuerte y de carácter. Los mejores cortes son los que suavizan los ángulos sin tapar tu definición natural — texturas, capas y algo de volumen arriba.'
+  },
+  oblong: {
+    label: 'Alargado',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="65" rx="28" ry="58" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Vertical y elegante',
+    desc: 'Tu rostro es notablemente más largo que ancho, con líneas verticales marcadas. Para equilibrar las proporciones, evitamos altura extra arriba y buscamos volumen lateral o capas que aporten ancho visual. La barba bien recortada también ayuda mucho.'
+  },
+  heart: {
+    label: 'Corazón',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 118 C20 100, 8 65, 8 38 C8 20, 22 10, 35 10 C42 10, 47 14, 50 20 C53 14, 58 10, 65 10 C78 10, 92 20, 92 38 C92 65, 80 100, 50 118 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Frente amplia, mentón fino',
+    desc: 'Tu frente es más ancha que tu mandíbula y tu mentón es notablemente puntiagudo. Es una estructura muy fotogénica que requiere balance: los cortes ideales son los que equilibran la parte superior y agregan peso visual abajo (barba, textura en la nuca).'
+  },
+  diamond: {
+    label: 'Diamante',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L92 65 L50 122 L8 65 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Pómulos protagonistas',
+    desc: 'Tu rostro destaca por pómulos marcados, mientras que la frente y el mentón son más estrechos. Es una estructura única y muy estética. Los cortes ideales son los que aportan volumen al frente o los lados para balancear el ancho de los pómulos.'
+  }
+};
 
 const PRODUCTS = [
   { brand: 'Mr Brook', name: 'Pomada de fijación fuerte', desc: 'Fijación todo el día, brillo medio.', img: 'assets/generated/tools-kit.png', wa: 'Hola! Me interesa la pomada de fijación fuerte. ¿Tienen disponible?' },
@@ -1052,16 +1315,18 @@ const PRODUCTS = [
   { brand: 'Mr Brook', name: 'Aceite de barba', desc: 'Suaviza, nutre y da brillo a la barba.', img: 'assets/generated/beard-razor.png', wa: 'Hola! Me interesa el aceite de barba.' }
 ];
 
-// URLs reales de reels Mr Brook — videos virales con vistas comprobadas
+// Social — alterna TikTok / Instagram con URLs reales.
+// TikTok auto-actualiza thumbnail vía oEmbed (CORS-friendly, sin auth).
+// Instagram requiere Graph API para auto-update (ver comentario al final del JS).
 const SOCIAL_VIDEOS = [
-  { platform: 'tt', title: 'Permanente Coreana 🫰🏻', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7434181309368438072', thumb: 'assets/styles/04-curly-top.png' },
-  { platform: 'tt', title: 'Ondas Tipo 2B 🔥', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7467639832466967814', thumb: 'assets/styles/03-mullet-perm.png' },
-  { platform: 'tt', title: 'Resultado 2B ✨', cat: 'antes/después', url: 'https://www.tiktok.com/@mrbrook.bs/video/7476557735870385463', thumb: 'assets/generated/curly-hair.png' },
-  { platform: 'tt', title: 'La mejor barbería de Guayaquil 💈', cat: 'apertura', url: 'https://www.tiktok.com/@mrbrook.bs/video/7024542627571748101', thumb: 'assets/render/shop-front.png' },
-  { platform: 'ig', title: 'Textured Crop · Fade', cat: 'cortes', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/01-textured-crop.png' },
-  { platform: 'ig', title: 'Platinado Premium', cat: 'color', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/05-platinum.png' },
-  { platform: 'ig', title: 'Cobre Texturizado', cat: 'color', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/06-copper.png' },
-  { platform: 'ig', title: 'Full Beard · Diseño', cat: 'barba', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/07-beard-fade.png' }
+  { platform: 'tt', title: 'Permanente Coreana', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7434181309368438072', thumb: 'assets/styles/04-curly-top.png' },
+  { platform: 'ig', title: 'Cortes en Tendencia', cat: 'cortes', url: 'https://www.instagram.com/mrbrook.bs/reel/C8xOTB3xbTd/', thumb: 'assets/styles/01-textured-crop.png' },
+  { platform: 'tt', title: 'Ondas Tipo 2B', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7467639832466967814', thumb: 'assets/styles/03-mullet-perm.png' },
+  { platform: 'ig', title: 'Proyecto Mr Brook · Salinas', cat: 'apertura', url: 'https://www.instagram.com/mrbrook.bs/reel/C5oTl5nOoxR/', thumb: 'assets/render/shop-balcony.png' },
+  { platform: 'tt', title: 'Resultado 2B', cat: 'antes/después', url: 'https://www.tiktok.com/@mrbrook.bs/video/7476557735870385463', thumb: 'assets/generated/curly-hair.png' },
+  { platform: 'ig', title: 'Más reels en Instagram', cat: 'feed', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/05-platinum.png' },
+  { platform: 'tt', title: 'Permanente Rizos', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7423866155875503366', thumb: 'assets/styles/04-curly-top.png' },
+  { platform: 'ig', title: '@mrbrook.bs', cat: 'perfil', url: 'https://www.instagram.com/mrbrook.bs/', thumb: 'assets/styles/06-copper.png' }
 ];
 
 // Google-style reviews. Replace with Google Places API in production.
@@ -1078,19 +1343,18 @@ const GOOGLE_REVIEWS = [
    POPULATE DOM
    ============================================================ */
 
-// Marquee
-function buildMarquee(id, list) {
-  const track = document.getElementById(id);
-  const doubled = [...list, ...list];
-  doubled.forEach(p => {
+// Marquee — single row, photos only, doubled for seamless loop
+(function buildMarquee() {
+  const track = document.getElementById('mq-a');
+  if (!track) return;
+  const doubled = [...MARQUEE, ...MARQUEE];
+  doubled.forEach(src => {
     const item = document.createElement('div');
     item.className = 'marquee-item interactive';
-    item.innerHTML = `<img src="${p.src}" alt="${p.label}"/><span class="marquee-item-label">${p.label}</span>`;
+    item.innerHTML = `<img src="${src}" alt="" loading="lazy"/>`;
     track.appendChild(item);
   });
-}
-buildMarquee('mq-a', MARQUEE);
-buildMarquee('mq-b', [...MARQUEE].reverse());
+})();
 
 // Service tabs
 const tabsEl = document.getElementById('services-tabs');
@@ -1133,70 +1397,7 @@ function selectService(i) {
 }
 selectService(0);
 
-// Style Lab
-const slGrid = document.getElementById('stylelab-grid');
-const slImg = document.getElementById('sl-img');
-const slCat = document.getElementById('sl-cat');
-const slName = document.getElementById('sl-name');
-const slDesc = document.getElementById('sl-desc');
-const slPrice = document.getElementById('sl-price');
-const slCta = document.getElementById('sl-cta');
-let activeStyle = 0;
-
-STYLES.forEach((s, i) => {
-  const t = document.createElement('div');
-  t.className = 'style-thumb interactive' + (i === 0 ? ' active' : '');
-  t.innerHTML = `
-    <div class="style-thumb-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-    <img src="${s.img}" alt="${s.name}"/>
-    <div class="style-thumb-overlay"></div>
-    <div class="style-thumb-info">
-      <div class="style-thumb-cat">${s.cat}</div>
-      <div class="style-thumb-name">${s.name}</div>
-    </div>`;
-  t.addEventListener('click', () => selectStyle(i));
-  slGrid.appendChild(t);
-});
-
-function selectStyle(i) {
-  if (i === activeStyle) return;
-  activeStyle = i;
-  const s = STYLES[i];
-  document.querySelectorAll('.style-thumb').forEach((t, k) => t.classList.toggle('active', k === i));
-
-  // Animated transition: clip-path wipe + opacity
-  const newImg = document.createElement('img');
-  newImg.src = s.img;
-  newImg.alt = s.name;
-  newImg.style.clipPath = 'inset(0 100% 0 0)';
-  newImg.style.transform = 'scale(1.06)';
-  document.getElementById('sl-img-wrap').appendChild(newImg);
-
-  // Animate in
-  requestAnimationFrame(() => {
-    newImg.style.transition = 'clip-path 0.9s cubic-bezier(0.77, 0, 0.175, 1), transform 1.2s cubic-bezier(0.19,1,0.22,1)';
-    newImg.style.clipPath = 'inset(0 0 0 0)';
-    newImg.style.transform = 'scale(1)';
-  });
-
-  setTimeout(() => {
-    // Cleanup old img
-    const wrap = document.getElementById('sl-img-wrap');
-    const imgs = wrap.querySelectorAll('img');
-    if (imgs.length > 1) imgs[0].remove();
-  }, 1000);
-
-  // Text crossfade
-  [slCat, slName, slDesc, slPrice].forEach(el => { el.style.transition = 'opacity 0.3s'; el.style.opacity = '0'; });
-  setTimeout(() => {
-    slCat.textContent = s.cat;
-    slName.textContent = s.name;
-    slDesc.textContent = s.desc;
-    slPrice.textContent = s.price;
-    slCta.href = `https://api.whatsapp.com/send/?phone=593969012964&text=${encodeURIComponent(s.wa)}`;
-    [slCat, slName, slDesc, slPrice].forEach(el => el.style.opacity = '1');
-  }, 300);
-}
+// (Style Lab eliminado — reemplazado por Face Scanner al final de la página)
 
 // Products
 const productsGrid = document.getElementById('products-grid');
@@ -1219,22 +1420,23 @@ PRODUCTS.forEach(p => {
   productsGrid.appendChild(card);
 });
 
-// Social cards
+// Social cards — with live TikTok oEmbed thumbnail update
 const socialCardsEl = document.getElementById('social-cards');
 let activeSocial = 0;
 SOCIAL_VIDEOS.forEach((v, i) => {
   const card = document.createElement('a');
   card.href = v.url; card.target = '_blank'; card.rel = 'noopener';
   card.className = 'social-card interactive' + (i === activeSocial ? ' active' : ' inactive');
+  card.dataset.idx = i;
   const badgeHtml = v.platform === 'ig'
     ? `<div class="ig-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg></div>`
     : `<div class="tt-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></div>`;
   card.innerHTML = `
-    <img src="${v.thumb}" alt="${v.title}"/>
+    <img src="${v.thumb}" alt="${v.title}" data-thumb-idx="${i}"/>
     <div class="social-card-overlay"></div>
     <div class="social-platform">${badgeHtml}</div>
     <div class="social-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-    <div class="social-meta"><div class="social-title">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
+    <div class="social-meta"><div class="social-title" data-title-idx="${i}">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
   card.addEventListener('mouseenter', () => {
     document.querySelectorAll('.social-card').forEach((c, k) => {
       c.classList.toggle('active', k === i);
@@ -1243,6 +1445,27 @@ SOCIAL_VIDEOS.forEach((v, i) => {
     activeSocial = i;
   });
   socialCardsEl.appendChild(card);
+});
+
+// Live update — fetch real TikTok thumbnails via oEmbed (CORS-friendly, no auth required)
+SOCIAL_VIDEOS.forEach((v, i) => {
+  if (v.platform !== 'tt') return;
+  fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(v.url)}`)
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data) return;
+      const imgEl = document.querySelector(`[data-thumb-idx="${i}"]`);
+      if (imgEl && data.thumbnail_url) {
+        const newImg = new Image();
+        newImg.onload = () => {
+          imgEl.style.transition = 'opacity 0.4s ease';
+          imgEl.style.opacity = '0';
+          setTimeout(() => { imgEl.src = data.thumbnail_url; imgEl.style.opacity = '1'; }, 200);
+        };
+        newImg.src = data.thumbnail_url;
+      }
+    })
+    .catch(() => { /* fallback to local thumb */ });
 });
 
 // Reviews
@@ -1307,7 +1530,10 @@ if (typeof gsap !== 'undefined') {
   if (lenis) lenis.on('scroll', ScrollTrigger.update);
 }
 
-// SAFETY: hide loader after 4s no matter what (in case scripts fail)
+// Apply hero initial-state class (hides elements until GSAP animates them in)
+if (typeof gsap !== 'undefined') document.body.classList.add('js-hero-anim');
+
+// SAFETY: hide loader and reveal hero after 4s no matter what
 setTimeout(() => {
   const ld = document.getElementById('loader');
   if (ld && ld.style.display !== 'none') {
@@ -1315,43 +1541,48 @@ setTimeout(() => {
     ld.style.opacity = '0';
     setTimeout(() => ld.style.display = 'none', 700);
   }
-}, 4000);
+  document.body.classList.remove('js-hero-anim');
+}, 4500);
 
-// Loader sequence (defensive — only run if GSAP loaded)
+// Loader sequence + Hero entrance (defensive)
 window.addEventListener('load', () => {
+  const ld = document.getElementById('loader');
   if (typeof gsap === 'undefined') {
-    // GSAP failed → just hide loader
-    const ld = document.getElementById('loader');
     if (ld) { ld.style.transition = 'opacity 0.5s'; ld.style.opacity = '0'; setTimeout(() => ld.style.display = 'none', 600); }
+    document.body.classList.remove('js-hero-anim');
     return;
   }
-  const tl = gsap.timeline();
-  tl.to('#loader img', { opacity: 1, duration: 0.4, ease: 'power2.out' })
-    .to('#loader .ld-bar::after', { duration: 0 }) // placeholder
-    .to('#loader .ld-text', { opacity: 1, duration: 0.4 }, '-=0.2');
 
-  // animate ld-bar via inline style trick
+  // Loader fade-in
+  gsap.to('#loader img', { opacity: 1, duration: 0.4, ease: 'power2.out' });
+  gsap.to('#loader .ld-text', { opacity: 1, duration: 0.4, delay: 0.3 });
+  // ld-bar fill
   const ldFill = document.querySelector('#loader .ld-bar');
-  ldFill.style.position = 'relative';
-  const fill = document.createElement('div');
-  fill.style.cssText = 'position:absolute;top:0;left:0;height:100%;width:0;background:#C8B08A;transition: width 1.2s cubic-bezier(0.19,1,0.22,1);';
-  ldFill.appendChild(fill);
-  setTimeout(() => fill.style.width = '100%', 300);
+  if (ldFill) {
+    ldFill.style.position = 'relative';
+    const fill = document.createElement('div');
+    fill.style.cssText = 'position:absolute;top:0;left:0;height:100%;width:0;background:#C8B08A;transition: width 1.1s cubic-bezier(0.19,1,0.22,1);';
+    ldFill.appendChild(fill);
+    setTimeout(() => fill.style.width = '100%', 250);
+  }
 
-  tl.to('#loader', { opacity: 0, duration: 0.6, delay: 1.4, ease: 'power2.inOut', onComplete: () => document.getElementById('loader').style.display = 'none' });
+  // Hide loader → release hero CSS lock → animate hero in
+  const tl = gsap.timeline({ delay: 1.4 });
+  tl.to('#loader', {
+    opacity: 0, duration: 0.55, ease: 'power2.inOut',
+    onComplete: () => {
+      if (ld) ld.style.display = 'none';
+      document.body.classList.remove('js-hero-anim');
+    }
+  });
 
-  // Hero entrance
-  tl.from('.hero-logo', { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
-    .to('.hero-logo', { opacity: 1, duration: 0.4 }, '-=0.6')
-    .from('.hero-kicker', { opacity: 0, y: 12, duration: 0.5 }, '-=0.3')
-    .to('.hero-kicker', { opacity: 1, duration: 0.4 }, '-=0.5')
-    .from('.hero-h1 .reveal-line span', { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.12 }, '-=0.4')
-    .from('.hero-sub', { opacity: 0, y: 12, duration: 0.5 }, '-=0.5')
-    .to('.hero-sub', { opacity: 1, duration: 0.4 }, '-=0.6')
-    .from('.hero-ctas', { opacity: 0, y: 12, duration: 0.5 }, '-=0.4')
-    .to('.hero-ctas', { opacity: 1, duration: 0.4 }, '-=0.6')
-    .from('.hero-stats', { opacity: 0, y: 14, duration: 0.5 }, '-=0.3')
-    .to('.hero-stats', { opacity: 1, duration: 0.4 }, '-=0.6');
+  // Animate hero IN — simple, reliable fade+rise sequence
+  tl.fromTo('.hero-logo',   { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.1')
+    .fromTo('.hero-kicker', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.4')
+    .fromTo('.hero-h1',     { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.3')
+    .fromTo('.hero-sub',    { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.55')
+    .fromTo('.hero-ctas',   { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.35')
+    .fromTo('.hero-stats',  { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out', clearProps: 'transform,translate' }, '-=0.3');
 });
 
 // Scroll progress
@@ -1443,7 +1674,7 @@ document.querySelectorAll('.rating-bar-fill').forEach(el => {
 });
 
 // Generic fade-up reveal
-['.location-card', '.product-card', '.review-card', '.style-thumb', '.badge', '.services-tabs button'].forEach(sel => {
+['.location-card', '.product-card', '.review-card', '.badge', '.services-tabs button', '.scanner-cut'].forEach(sel => {
   document.querySelectorAll(sel).forEach((el, i) => {
     gsap.from(el, {
       opacity: 0, y: 30, duration: 0.8, ease: 'power3.out',
@@ -1504,44 +1735,237 @@ document.querySelectorAll('.tilt').forEach(card => {
 });
 
 /* ============================================================
-   MAGNETIC BUTTONS
+   MAGNETIC BUTTONS — only on desktop with fine pointer
    ============================================================ */
-document.querySelectorAll('.btn-primary, .btn-ghost, .btn-nav').forEach(btn => {
-  btn.addEventListener('mousemove', e => {
-    const r = btn.getBoundingClientRect();
-    const x = e.clientX - r.left - r.width / 2;
-    const y = e.clientY - r.top - r.height / 2;
-    btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll('.btn-primary, .btn-ghost, .btn-nav').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2;
+      const y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.18}px, ${y * 0.22}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1)';
+      btn.style.transform = 'translate(0, 0)';
+      setTimeout(() => btn.style.transition = '', 360);
+    });
   });
-  btn.addEventListener('mouseleave', () => {
-    btn.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    btn.style.transform = 'translate(0, 0)';
-    setTimeout(() => btn.style.transition = '', 600);
-  });
-});
+}
+
+/* PARALLAX FLOATERS — disabled (handled by CSS @keyframes floatBob) */
 
 /* ============================================================
-   PARALLAX FLOATERS
+   FACE SCANNER — MediaPipe Face Mesh, lazy-loaded on first use
    ============================================================ */
-gsap.utils.toArray('.float-deco').forEach((el, i) => {
-  gsap.to(el, {
-    y: (i % 2 === 0) ? -120 : 120,
-    rotation: (i % 2 === 0) ? -8 : 8,
-    ease: 'none',
-    scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: 1 }
-  });
-});
+const Scanner = (() => {
+  let faceMesh = null;
+  let modelLoading = null;
+  let cameraStream = null;
+  let cameraTimer = null;
+
+  const $ = id => document.getElementById(id);
+  const showStep = name => document.querySelectorAll('.scanner-step').forEach(s => s.classList.toggle('active', s.dataset.step === name));
+
+  async function loadModel() {
+    if (faceMesh) return faceMesh;
+    if (modelLoading) return modelLoading;
+
+    modelLoading = (async () => {
+      // Inject MediaPipe FaceMesh script if not present
+      if (typeof FaceMesh === 'undefined') {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js';
+          s.crossOrigin = 'anonymous';
+          s.onload = resolve;
+          s.onerror = () => reject(new Error('Failed to load FaceMesh'));
+          document.head.appendChild(s);
+        });
+      }
+      const fm = new FaceMesh({
+        locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${f}`
+      });
+      fm.setOptions({ maxNumFaces: 1, refineLandmarks: false, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
+      faceMesh = fm;
+      return fm;
+    })();
+    return modelLoading;
+  }
+
+  function classifyFace(landmarks) {
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    // Key landmarks (MediaPipe Face Mesh indexes)
+    const top = landmarks[10], chin = landmarks[152];
+    const cheekR = landmarks[234], cheekL = landmarks[454];
+    const jawR = landmarks[172], jawL = landmarks[397];
+    const foreR = landmarks[67], foreL = landmarks[297];
+
+    const length = dist(top, chin);
+    const width = dist(cheekR, cheekL);
+    const jaw = dist(jawR, jawL);
+    const fore = dist(foreR, foreL);
+
+    const lwRatio = length / width;       // elongation
+    const jwRatio = jaw / width;          // squareness of jaw vs cheek
+    const fjRatio = fore / jaw;           // forehead vs jaw
+    const cfRatio = width / fore;         // cheek vs forehead
+
+    let shape;
+    if (lwRatio > 1.55) shape = 'oblong';
+    else if (lwRatio < 1.18) {
+      shape = jwRatio > 0.92 ? 'square' : 'round';
+    } else {
+      if (fjRatio > 1.18) shape = 'heart';
+      else if (cfRatio > 1.08 && jwRatio < 0.85) shape = 'diamond';
+      else shape = 'oval';
+    }
+    return { shape, metrics: { lwRatio: lwRatio.toFixed(2), jwRatio: jwRatio.toFixed(2), fjRatio: fjRatio.toFixed(2) } };
+  }
+
+  function showResult(shape) {
+    const data = FACE_SHAPES[shape] || FACE_SHAPES.oval;
+    $('result-svg').innerHTML = data.svg;
+    $('result-short').textContent = data.short;
+    $('result-shape').textContent = data.label;
+    $('result-desc').textContent = data.desc;
+    // Personalizar mensaje WhatsApp con tipo de rostro detectado
+    const ctaBtn = $('scanner-result-cta');
+    if (ctaBtn) {
+      const msg = encodeURIComponent(`Hola Mr Brook! Hice el escáner de rostro en la web — me detectó tipo "${data.label}". Quiero reservar una consulta para ver qué cortes me van.`);
+      ctaBtn.href = `https://api.whatsapp.com/send/?phone=593969012964&text=${msg}`;
+    }
+    showStep('result');
+  }
+
+  function showError(msg) {
+    if (msg) $('scanner-error-msg').textContent = msg;
+    showStep('error');
+  }
+
+  async function analyzeImage(imgEl) {
+    $('scanner-progress').textContent = 'Cargando modelo IA…';
+    let fm;
+    try { fm = await loadModel(); }
+    catch (e) { console.error(e); return showError('No pudimos cargar el modelo IA. Verificá tu conexión y probá de nuevo.'); }
+
+    $('scanner-progress').textContent = 'Detectando rostro…';
+    let result = null;
+    fm.onResults(r => { result = r; });
+
+    try { await fm.send({ image: imgEl }); }
+    catch (e) { console.error(e); return showError('Error procesando la imagen. Probá con otra foto.'); }
+
+    if (!result || !result.multiFaceLandmarks || !result.multiFaceLandmarks.length) {
+      return showError('No detectamos un rostro en la foto. Probá con una imagen frontal y bien iluminada.');
+    }
+    $('scanner-progress').textContent = 'Calculando proporciones…';
+    const { shape } = classifyFace(result.multiFaceLandmarks[0]);
+    setTimeout(() => showResult(shape), 700);
+  }
+
+  function processFile(file) {
+    if (!file.type.startsWith('image/')) return showError('El archivo no es una imagen válida.');
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const previewImg = $('scanner-preview-img');
+      previewImg.src = url;
+      previewImg.style.display = 'block';
+      $('scanner-preview-video').style.display = 'none';
+      showStep('analyzing');
+      analyzeImage(img);
+    };
+    img.onerror = () => showError('No se pudo abrir la imagen.');
+    img.src = url;
+  }
+
+  async function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return showError('Tu navegador no soporta acceso a cámara. Probá subiendo una foto.');
+    }
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1080 } }
+      });
+    } catch (e) {
+      return showError('No pudimos acceder a tu cámara. Probá subiendo una foto en su lugar.');
+    }
+    const video = $('scanner-preview-video');
+    const img = $('scanner-preview-img');
+    img.style.display = 'none';
+    video.style.display = 'block';
+    video.srcObject = cameraStream;
+    showStep('analyzing');
+
+    let countdown = 3;
+    $('scanner-progress').textContent = `Posicioná tu rostro… capturando en ${countdown}s`;
+    cameraTimer = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        $('scanner-progress').textContent = `Capturando en ${countdown}s…`;
+      } else {
+        clearInterval(cameraTimer);
+        captureFrame();
+      }
+    }, 1000);
+  }
+
+  function captureFrame() {
+    const video = $('scanner-preview-video');
+    if (!video.videoWidth) {
+      stopCamera();
+      return showError('La cámara no devolvió imagen. Probá subiendo una foto.');
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const img = new Image();
+    img.onload = () => {
+      stopCamera();
+      const previewImg = $('scanner-preview-img');
+      previewImg.src = img.src;
+      previewImg.style.display = 'block';
+      video.style.display = 'none';
+      analyzeImage(img);
+    };
+    img.src = canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  function stopCamera() {
+    if (cameraTimer) { clearInterval(cameraTimer); cameraTimer = null; }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    const video = $('scanner-preview-video');
+    if (video) { video.srcObject = null; video.style.display = 'none'; }
+  }
+
+  function reset() {
+    stopCamera();
+    showStep('intro');
+  }
+
+  function init() {
+    $('scanner-btn-upload')?.addEventListener('click', () => $('scanner-file').click());
+    $('scanner-file')?.addEventListener('change', e => { const f = e.target.files?.[0]; if (f) processFile(f); });
+    $('scanner-btn-camera')?.addEventListener('click', startCamera);
+    $('scanner-btn-retry')?.addEventListener('click', reset);
+    $('scanner-btn-back')?.addEventListener('click', reset);
+  }
+
+  return { init };
+})();
+Scanner.init();
 
 /* ============================================================
-   GOOGLE PLACES INTEGRATION (placeholder)
+   GOOGLE PLACES INTEGRATION (placeholder for future backend)
    ============================================================
-   To replace the demo reviews with real Google data:
-   1. Create a Google Cloud project, enable Places API.
-   2. Get the place_id of each Mr Brook location.
-   3. From a backend (Node, PHP, etc.), call:
-      https://maps.googleapis.com/maps/api/place/details/json?place_id=PLACE_ID&fields=reviews,rating,user_ratings_total&key=YOUR_KEY
-   4. Inject the JSON response into GOOGLE_REVIEWS / score / count
-      and redraw the review cards using the same template above.
+   To replace the demo reviews with real Google data, build a
+   small backend that calls Places API and pushes to GOOGLE_REVIEWS.
    ============================================================ */
 </script>
 

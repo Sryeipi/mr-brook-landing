@@ -302,13 +302,16 @@
     .scroll-line-bar { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(200,176,138,0.65), transparent); animation: pulse 2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:0.35} 50%{opacity:1} }
 
-    /* MARQUEE — single-row clean carousel, photos only */
+    /* MARQUEE — single-row clean carousel, photos only, always-on scroll */
     .marquee-section { background: var(--black); padding: 56px 0 56px; overflow: hidden; }
     .marquee-row { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
-    .marquee-track { display: flex; width: max-content; gap: 18px; will-change: transform; }
-    .marquee-track-a { animation: mqL 60s linear infinite; }
-    .marquee-track:hover { animation-play-state: paused; }
-    @keyframes mqL { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .marquee-track {
+      display: flex; width: max-content; gap: 18px;
+      will-change: transform;
+      animation: mqScroll 35s linear infinite;
+      animation-play-state: running !important;
+    }
+    @keyframes mqScroll { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(-50%,0,0)} }
     .marquee-item {
       flex-shrink: 0; width: 240px; height: 340px;
       border-radius: 18px; overflow: hidden; position: relative;
@@ -321,11 +324,11 @@
       border-color: rgba(200,176,138,0.45);
       box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,176,138,0.15);
     }
-    .marquee-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s var(--ease-out); }
+    .marquee-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s var(--ease-out); pointer-events: none; }
     .marquee-item:hover img { transform: scale(1.08); }
     @media (max-width: 600px) {
       .marquee-item { width: 180px; height: 260px; }
-      .marquee-track-a { animation-duration: 45s; }
+      .marquee-track { animation-duration: 28s; }
     }
 
     /* STATS */
@@ -473,12 +476,76 @@
     .scanner-preview-wrap {
       width: 100%; max-width: 360px; aspect-ratio: 4/5;
       border-radius: 20px; overflow: hidden;
-      position: relative; margin: 0 auto 28px;
-      border: 1.5px solid rgba(200,176,138,0.25);
+      position: relative; margin: 0 auto 22px;
+      border: 1.5px solid rgba(200,176,138,0.35);
       background: var(--black);
+      box-shadow: 0 0 0 4px rgba(200,176,138,0.08), 0 30px 60px rgba(0,0,0,0.5);
     }
     .scanner-preview-wrap img, .scanner-preview-wrap video {
       width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    #scanner-landmarks-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 3;
+    }
+    .scanner-hud {
+      position: absolute; top: 14px; left: 14px; z-index: 4;
+      pointer-events: none;
+    }
+    .hud-row {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold-bright); font-weight: 600;
+      padding: 5px 10px; border-radius: 100px;
+      background: rgba(11,11,13,0.6); backdrop-filter: blur(6px);
+      border: 1px solid rgba(200,176,138,0.25);
+    }
+    .hud-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--gold-bright);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .scanner-stages {
+      width: 100%; max-width: 380px; margin: 0 auto 18px;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .scan-stage {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 14px; border-radius: 10px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+      opacity: 0.35; transition: all 0.4s var(--ease-out);
+    }
+    .scan-stage.active {
+      opacity: 1;
+      background: linear-gradient(135deg, rgba(200,176,138,0.14), rgba(138,106,75,0.04));
+      border-color: rgba(200,176,138,0.35);
+    }
+    .scan-stage.done {
+      opacity: 0.6;
+      border-color: rgba(200,176,138,0.18);
+    }
+    .stage-num {
+      font-family: var(--serif); font-size: 13px; font-weight: 600;
+      color: var(--gold-bright); width: 26px; text-align: center; flex-shrink: 0;
+    }
+    .scan-stage.done .stage-num::before {
+      content: '✓'; color: var(--gold-bright);
+    }
+    .scan-stage.done .stage-num { font-size: 0; }
+    .scan-stage.done .stage-num::before { font-size: 16px; }
+    .stage-text {
+      font-size: 12px; color: rgba(255,255,255,0.85); flex: 1;
+      letter-spacing: 0.02em;
+    }
+    .scan-stage.active .stage-text::after {
+      content: '…'; color: var(--gold-bright); margin-left: 4px;
+      animation: stageEll 1s steps(3) infinite;
+    }
+    @keyframes stageEll {
+      0% { content: ''; }
+      33% { content: '.'; }
+      66% { content: '..'; }
+      100% { content: '...'; }
     }
     .scanner-scanline {
       position: absolute; left: 0; right: 0; top: 0; height: 4px;
@@ -740,6 +807,68 @@
     .footer-link:hover { color: var(--gold-light); }
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.04); padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .footer-bottom span { font-size: 11px; color: rgba(255,255,255,0.18); }
+
+    /* SOCIAL MODAL — TikTok/Instagram real video embed */
+    #social-modal {
+      position: fixed; inset: 0; z-index: 9500;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; transition: opacity 0.3s var(--ease-out);
+    }
+    #social-modal.open { display: flex; opacity: 1; }
+    .social-modal-panel {
+      position: relative;
+      width: 100%; max-width: 380px;
+      max-height: 92vh;
+      background: #000;
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid rgba(200,176,138,0.25);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,176,138,0.12);
+      transform: scale(0.92); opacity: 0;
+      transition: transform 0.5s var(--ease-out), opacity 0.4s var(--ease-out);
+    }
+    #social-modal.open .social-modal-panel { transform: scale(1); opacity: 1; }
+    .social-modal-frame { width: 100%; height: 700px; max-height: 88vh; border: 0; display: block; background: #000; }
+    .social-modal-loading {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      pointer-events: none;
+    }
+    .social-modal-loading .spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid rgba(200,176,138,0.2); border-top-color: var(--gold-bright);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .social-modal-loading span { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .social-modal-close {
+      position: absolute; top: -12px; right: -12px; z-index: 10;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--white); color: var(--black);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      cursor: pointer; border: none;
+      transition: transform 0.25s var(--ease-out), background 0.2s;
+    }
+    .social-modal-close:hover { transform: rotate(90deg) scale(1.1); background: var(--gold-bright); }
+    .social-modal-meta {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(11,11,13,0.95), rgba(27,29,33,0.95));
+      border-bottom: 1px solid rgba(200,176,138,0.15);
+    }
+    .social-modal-platform { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .social-modal-platform.ig { background: linear-gradient(135deg, #f09433, #dc2743 50%, #bc1888); }
+    .social-modal-platform.tt { background: #000; }
+    .social-modal-meta .modal-title { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; flex: 1; }
+    .social-modal-meta .modal-link { font-size: 11px; color: var(--gold-bright); text-decoration: none; padding: 6px 12px; border-radius: 100px; border: 1px solid rgba(200,176,138,0.3); white-space: nowrap; }
+    .social-modal-meta .modal-link:hover { background: rgba(200,176,138,0.1); }
+    @media (max-width: 480px) {
+      .social-modal-panel { max-width: 100%; }
+      .social-modal-close { top: 8px; right: 8px; }
+    }
 
     /* FLOAT BUTTONS — clean, no pulse */
     .float-btn {
@@ -1100,16 +1229,27 @@ Domingo: 10:00 – 17:30</p>
         <p class="scanner-tip">Procesamiento 100% local · Cero datos enviados · Recomendación basada en geometría facial</p>
       </div>
 
-      <!-- STEP 2: Analyzing -->
+      <!-- STEP 2: Analyzing — multi-stage scan with landmarks visualization -->
       <div class="scanner-step" data-step="analyzing">
         <div class="scanner-preview-wrap">
           <img id="scanner-preview-img" src="" alt="Preview"/>
           <video id="scanner-preview-video" style="display:none" autoplay playsinline muted></video>
+          <canvas id="scanner-landmarks-canvas"></canvas>
           <div class="scanner-grid-overlay"></div>
           <div class="scanner-scanline"></div>
           <div class="scanner-corners"></div>
+          <div class="scanner-hud">
+            <div class="hud-row"><span class="hud-dot"></span> SCAN MODE · MR BROOK STYLE AI</div>
+          </div>
         </div>
-        <div class="scanner-progress" id="scanner-progress">Analizando geometría facial…</div>
+        <div class="scanner-stages" id="scanner-stages">
+          <div class="scan-stage" data-i="0"><span class="stage-num">01</span><span class="stage-text">Detectando rostro</span></div>
+          <div class="scan-stage" data-i="1"><span class="stage-num">02</span><span class="stage-text">Mapeando 468 puntos faciales</span></div>
+          <div class="scan-stage" data-i="2"><span class="stage-num">03</span><span class="stage-text">Calculando proporciones áureas</span></div>
+          <div class="scan-stage" data-i="3"><span class="stage-num">04</span><span class="stage-text">Comparando con base de datos</span></div>
+          <div class="scan-stage" data-i="4"><span class="stage-num">05</span><span class="stage-text">Generando análisis personalizado</span></div>
+        </div>
+        <div class="scanner-progress" id="scanner-progress">Iniciando escáner…</div>
       </div>
 
       <!-- STEP 3: Result -->
@@ -1194,6 +1334,24 @@ Domingo: 10:00 – 17:30</p>
   </div>
 </footer>
 
+<!-- Social Video Modal (TikTok / Instagram embed) -->
+<div id="social-modal" role="dialog" aria-modal="true" aria-label="Reproductor de video">
+  <div class="social-modal-panel">
+    <button class="social-modal-close" id="social-modal-close" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="social-modal-meta">
+      <div class="social-modal-platform" id="modal-platform"></div>
+      <div class="modal-title" id="modal-title">Cargando…</div>
+      <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener">Ver en app</a>
+    </div>
+    <div style="position:relative">
+      <div class="social-modal-loading"><div class="spinner"></div><span>Cargando video…</span></div>
+      <iframe class="social-modal-frame" id="social-modal-frame" src="about:blank" allow="encrypted-media; fullscreen; autoplay" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+</div>
+
 <!-- Float buttons -->
 <a id="ig-float" class="float-btn" href="https://ig.me/m/mrbrook.bs" target="_blank" rel="noopener" aria-label="Enviar DM en Instagram" title="DM Instagram">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="white"/></svg>
@@ -1265,8 +1423,7 @@ const SERVICE_GROUPS = [
   ]}
 ];
 
-// Forma de rostro detectada — sin imágenes de cortes, solo visual del shape + descripción
-// SVG paths para representar cada forma facial visualmente
+// Forma de rostro detectada — 9 tipos primarios + combinaciones detectables
 const FACE_SHAPES = {
   oval: {
     label: 'Ovalado',
@@ -1286,11 +1443,17 @@ const FACE_SHAPES = {
     short: 'Mandíbula marcada',
     desc: 'Tu rostro tiene una mandíbula angular y bien definida, con frente y pómulos del mismo ancho. Es una estructura fuerte y de carácter. Los mejores cortes son los que suavizan los ángulos sin tapar tu definición natural — texturas, capas y algo de volumen arriba.'
   },
+  rectangle: {
+    label: 'Rectangular',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="10" width="60" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Largo y estructurado',
+    desc: 'Tu rostro es alargado con líneas rectas y mandíbula definida. Combina la altura de un rostro alargado con la angulosidad de uno cuadrado. Buscamos cortes con volumen lateral y textura suave que aporten ancho visual sin perder el carácter.'
+  },
   oblong: {
     label: 'Alargado',
     svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="65" rx="28" ry="58" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
     short: 'Vertical y elegante',
-    desc: 'Tu rostro es notablemente más largo que ancho, con líneas verticales marcadas. Para equilibrar las proporciones, evitamos altura extra arriba y buscamos volumen lateral o capas que aporten ancho visual. La barba bien recortada también ayuda mucho.'
+    desc: 'Tu rostro es notablemente más largo que ancho, con curvas suaves. Para equilibrar las proporciones, evitamos altura extra arriba y buscamos volumen lateral o capas que aporten ancho visual. La barba bien recortada también ayuda mucho.'
   },
   heart: {
     label: 'Corazón',
@@ -1303,6 +1466,18 @@ const FACE_SHAPES = {
     svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L92 65 L50 122 L8 65 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
     short: 'Pómulos protagonistas',
     desc: 'Tu rostro destaca por pómulos marcados, mientras que la frente y el mentón son más estrechos. Es una estructura única y muy estética. Los cortes ideales son los que aportan volumen al frente o los lados para balancear el ancho de los pómulos.'
+  },
+  triangle: {
+    label: 'Triangular',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 12 L92 122 L8 122 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Mandíbula amplia',
+    desc: 'Tu mandíbula es más ancha que tu frente — una estructura masculina y de presencia fuerte. Los cortes ideales aportan volumen y peso en la parte superior para balancear visualmente la mandíbula y crear armonía global.'
+  },
+  pentagon: {
+    label: 'Pentagonal',
+    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L88 42 L78 122 L22 122 L12 42 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    short: 'Estructura única',
+    desc: 'Tu rostro combina pómulos prominentes con mandíbula sólida y un mentón definido. Es una estructura poco común y muy distintiva. Los mejores cortes la enmarcan con textura controlada y volumen estratégico arriba.'
   }
 };
 
@@ -1420,14 +1595,72 @@ PRODUCTS.forEach(p => {
   productsGrid.appendChild(card);
 });
 
-// Social cards — with live TikTok oEmbed thumbnail update
+// Social cards — click opens modal with REAL embed (TikTok / Instagram)
 const socialCardsEl = document.getElementById('social-cards');
 let activeSocial = 0;
+
+function getEmbedUrl(v) {
+  if (v.platform === 'tt') {
+    // TikTok video ID is at end of URL
+    const m = v.url.match(/\/video\/(\d+)/);
+    if (m) return `https://www.tiktok.com/embed/v2/${m[1]}?lang=es`;
+    return v.url;
+  }
+  if (v.platform === 'ig') {
+    // Instagram reel shortcode → embed URL
+    const m = v.url.match(/\/reel\/([\w-]+)/);
+    if (m) return `https://www.instagram.com/reel/${m[1]}/embed/?cr=1&v=14`;
+    // perfil/feed → fallback al perfil
+    return null;
+  }
+  return null;
+}
+
+function openSocialModal(v) {
+  const modal = document.getElementById('social-modal');
+  const frame = document.getElementById('social-modal-frame');
+  const title = document.getElementById('modal-title');
+  const link = document.getElementById('modal-link');
+  const platform = document.getElementById('modal-platform');
+
+  const embedUrl = getEmbedUrl(v);
+  if (!embedUrl) {
+    // No embed available (e.g. profile link) → just open the URL
+    window.open(v.url, '_blank', 'noopener');
+    return;
+  }
+
+  title.textContent = v.title;
+  link.href = v.url;
+  link.textContent = v.platform === 'ig' ? 'Ver en Instagram' : 'Ver en TikTok';
+
+  platform.className = 'social-modal-platform ' + v.platform;
+  platform.innerHTML = v.platform === 'ig'
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg>'
+    : '<svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>';
+
+  frame.src = embedUrl;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSocialModal() {
+  const modal = document.getElementById('social-modal');
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  // Stop video playback
+  setTimeout(() => { document.getElementById('social-modal-frame').src = 'about:blank'; }, 300);
+}
+document.getElementById('social-modal-close')?.addEventListener('click', closeSocialModal);
+document.getElementById('social-modal')?.addEventListener('click', e => { if (e.target.id === 'social-modal') closeSocialModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSocialModal(); });
+
 SOCIAL_VIDEOS.forEach((v, i) => {
-  const card = document.createElement('a');
-  card.href = v.url; card.target = '_blank'; card.rel = 'noopener';
+  const card = document.createElement('button');
+  card.type = 'button';
   card.className = 'social-card interactive' + (i === activeSocial ? ' active' : ' inactive');
   card.dataset.idx = i;
+  card.addEventListener('click', () => openSocialModal(v));
+  card.style.cssText += 'background:transparent;padding:0;border-style:solid;';
   const badgeHtml = v.platform === 'ig'
     ? `<div class="ig-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg></div>`
     : `<div class="tt-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></div>`;
@@ -1756,7 +1989,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
 /* PARALLAX FLOATERS — disabled (handled by CSS @keyframes floatBob) */
 
 /* ============================================================
-   FACE SCANNER — MediaPipe Face Mesh, lazy-loaded on first use
+   FACE SCANNER v2 — MediaPipe Face Mesh + multi-stage scan + landmarks visualization
    ============================================================ */
 const Scanner = (() => {
   let faceMesh = null;
@@ -1770,9 +2003,7 @@ const Scanner = (() => {
   async function loadModel() {
     if (faceMesh) return faceMesh;
     if (modelLoading) return modelLoading;
-
     modelLoading = (async () => {
-      // Inject MediaPipe FaceMesh script if not present
       if (typeof FaceMesh === 'undefined') {
         await new Promise((resolve, reject) => {
           const s = document.createElement('script');
@@ -1786,53 +2017,166 @@ const Scanner = (() => {
       const fm = new FaceMesh({
         locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${f}`
       });
-      fm.setOptions({ maxNumFaces: 1, refineLandmarks: false, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
+      // Higher precision: refineLandmarks adds eye/lip detail (slower but more accurate)
+      fm.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
       faceMesh = fm;
       return fm;
     })();
     return modelLoading;
   }
 
+  // === SCORING-BASED CLASSIFIER (9 shape types + combinations) ===
   function classifyFace(landmarks) {
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-    // Key landmarks (MediaPipe Face Mesh indexes)
-    const top = landmarks[10], chin = landmarks[152];
-    const cheekR = landmarks[234], cheekL = landmarks[454];
-    const jawR = landmarks[172], jawL = landmarks[397];
-    const foreR = landmarks[67], foreL = landmarks[297];
+    // Key facial landmarks (MediaPipe Face Mesh indices)
+    const top = landmarks[10];      // mid-forehead top
+    const chin = landmarks[152];    // chin bottom
+    const cheekR = landmarks[234], cheekL = landmarks[454];   // widest cheek points
+    const jawR = landmarks[172], jawL = landmarks[397];       // mid-jaw width
+    const foreR = landmarks[67], foreL = landmarks[297];      // forehead corners
+    const chinR = landmarks[176], chinL = landmarks[400];     // chin width
+    const jawAngleR = landmarks[150], jawAngleL = landmarks[379]; // mandible angle points
 
+    // Core measurements
     const length = dist(top, chin);
-    const width = dist(cheekR, cheekL);
-    const jaw = dist(jawR, jawL);
-    const fore = dist(foreR, foreL);
+    const width = dist(cheekR, cheekL);          // widest face point
+    const jaw = dist(jawR, jawL);                // mid-jaw
+    const fore = dist(foreR, foreL);             // forehead width
+    const chinW = dist(chinR, chinL);            // chin sharpness
 
-    const lwRatio = length / width;       // elongation
-    const jwRatio = jaw / width;          // squareness of jaw vs cheek
-    const fjRatio = fore / jaw;           // forehead vs jaw
-    const cfRatio = width / fore;         // cheek vs forehead
+    // Ratios
+    const r = {
+      lw: length / width,           // elongation (taller > 1.4)
+      jw: jaw / width,              // jaw vs cheek (>0.9 = square-ish)
+      fj: fore / jaw,               // forehead vs jaw (>1.15 = heart, <0.85 = triangle)
+      cf: width / fore,             // cheek vs forehead (>1.1 = diamond/pentagon)
+      chinSharp: chinW / jaw,       // pointed chin (<0.55 = sharp)
+    };
 
-    let shape;
-    if (lwRatio > 1.55) shape = 'oblong';
-    else if (lwRatio < 1.18) {
-      shape = jwRatio > 0.92 ? 'square' : 'round';
-    } else {
-      if (fjRatio > 1.18) shape = 'heart';
-      else if (cfRatio > 1.08 && jwRatio < 0.85) shape = 'diamond';
-      else shape = 'oval';
+    // Score each shape — higher = better match
+    const scores = {
+      oval:      score(r.lw, 1.35, 0.18) * score(r.jw, 0.83, 0.15) * score(r.fj, 1.0, 0.18),
+      round:     score(r.lw, 1.05, 0.12) * score(r.jw, 0.88, 0.18) * (r.chinSharp > 0.6 ? 1 : 0.6),
+      square:    score(r.lw, 1.1, 0.15) * (r.jw > 0.92 ? 1.5 : 0.5) * (r.chinSharp > 0.6 ? 1.2 : 0.7),
+      rectangle: score(r.lw, 1.55, 0.18) * (r.jw > 0.9 ? 1.4 : 0.6) * (r.chinSharp > 0.55 ? 1.1 : 0.7),
+      oblong:    score(r.lw, 1.65, 0.15) * (r.jw < 0.88 ? 1.3 : 0.6),
+      heart:     score(r.fj, 1.25, 0.15) * (r.chinSharp < 0.6 ? 1.4 : 0.7) * score(r.lw, 1.3, 0.2),
+      diamond:   score(r.cf, 1.18, 0.12) * (r.jw < 0.85 ? 1.3 : 0.6) * (r.chinSharp < 0.6 ? 1.3 : 0.7),
+      triangle:  (r.fj < 0.88 ? 1.5 : 0.4) * (r.jw > 0.9 ? 1.2 : 0.7) * score(r.lw, 1.25, 0.2),
+      pentagon:  score(r.cf, 1.1, 0.15) * (r.jw > 0.85 ? 1.2 : 0.6) * (r.chinSharp > 0.55 ? 1.1 : 0.7) * score(r.lw, 1.2, 0.18),
+    };
+
+    function score(value, target, tolerance) {
+      const diff = Math.abs(value - target);
+      return Math.max(0, 1 - (diff / tolerance));
     }
-    return { shape, metrics: { lwRatio: lwRatio.toFixed(2), jwRatio: jwRatio.toFixed(2), fjRatio: fjRatio.toFixed(2) } };
+
+    // Sort by score, get primary + secondary
+    const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const primary = ranked[0];
+    const secondary = ranked[1];
+
+    // If secondary is within 80% of primary, it's a combination
+    const isCombo = primary[1] > 0 && (secondary[1] / primary[1]) > 0.78 && primary[0] !== secondary[0];
+
+    return {
+      primary: primary[0],
+      secondary: isCombo ? secondary[0] : null,
+      scores,
+      metrics: r
+    };
   }
 
-  function showResult(shape) {
-    const data = FACE_SHAPES[shape] || FACE_SHAPES.oval;
-    $('result-svg').innerHTML = data.svg;
-    $('result-short').textContent = data.short;
-    $('result-shape').textContent = data.label;
-    $('result-desc').textContent = data.desc;
-    // Personalizar mensaje WhatsApp con tipo de rostro detectado
+  // === DRAW LANDMARKS on the preview (animated, partial reveal) ===
+  function drawLandmarks(imgEl, landmarks, progress = 1) {
+    const canvas = $('scanner-landmarks-canvas');
+    if (!canvas || !landmarks) return;
+    const wrap = canvas.parentElement;
+    if (!wrap) return;
+    const w = wrap.offsetWidth, h = wrap.offsetHeight;
+    if (!w || !h) return;
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, w, h);
+
+    // Reveal subset based on progress
+    const total = landmarks.length;
+    const revealCount = Math.floor(total * progress);
+
+    ctx.fillStyle = 'rgba(217, 193, 154, 0.85)';
+    ctx.shadowColor = 'rgba(200, 176, 138, 0.7)';
+    ctx.shadowBlur = 4;
+
+    for (let i = 0; i < revealCount; i++) {
+      const p = landmarks[i];
+      ctx.beginPath();
+      ctx.arc(p.x * w, p.y * h, 1.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Highlight key analysis points (bigger)
+    const KEY_POINTS = [10, 152, 234, 454, 172, 397, 67, 297, 176, 400, 150, 379];
+    if (progress > 0.5) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+      ctx.shadowBlur = 8;
+      KEY_POINTS.forEach(idx => {
+        if (landmarks[idx]) {
+          const p = landmarks[idx];
+          ctx.beginPath();
+          ctx.arc(p.x * w, p.y * h, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+    }
+
+    // Draw measurement lines (final stage)
+    if (progress >= 0.95) {
+      ctx.strokeStyle = 'rgba(217, 193, 154, 0.5)';
+      ctx.lineWidth = 1.2;
+      ctx.shadowBlur = 0;
+      ctx.setLineDash([3, 3]);
+      const draw = (a, b) => {
+        ctx.beginPath();
+        ctx.moveTo(landmarks[a].x * w, landmarks[a].y * h);
+        ctx.lineTo(landmarks[b].x * w, landmarks[b].y * h);
+        ctx.stroke();
+      };
+      draw(10, 152);   // length
+      draw(234, 454);  // width
+      draw(172, 397);  // jaw
+      draw(67, 297);   // forehead
+      ctx.setLineDash([]);
+    }
+  }
+
+  function setStage(idx) {
+    document.querySelectorAll('.scan-stage').forEach((el, i) => {
+      el.classList.toggle('active', i === idx);
+      el.classList.toggle('done', i < idx);
+    });
+  }
+
+  function showResult(classified) {
+    const primaryData = FACE_SHAPES[classified.primary] || FACE_SHAPES.oval;
+    const secondaryData = classified.secondary ? FACE_SHAPES[classified.secondary] : null;
+
+    $('result-svg').innerHTML = primaryData.svg;
+
+    if (secondaryData) {
+      // Combination
+      $('result-short').textContent = `${primaryData.short} con rasgos ${secondaryData.label.toLowerCase()}`;
+      $('result-shape').textContent = `${primaryData.label}-${secondaryData.label}`;
+      $('result-desc').textContent = primaryData.desc + ` Además, presentas características de un rostro ${secondaryData.label.toLowerCase()} (${secondaryData.short.toLowerCase()}), lo que lo hace una combinación única.`;
+    } else {
+      $('result-short').textContent = primaryData.short;
+      $('result-shape').textContent = primaryData.label;
+      $('result-desc').textContent = primaryData.desc;
+    }
+
     const ctaBtn = $('scanner-result-cta');
     if (ctaBtn) {
-      const msg = encodeURIComponent(`Hola Mr Brook! Hice el escáner de rostro en la web — me detectó tipo "${data.label}". Quiero reservar una consulta para ver qué cortes me van.`);
+      const typeName = secondaryData ? `${primaryData.label}-${secondaryData.label}` : primaryData.label;
+      const msg = encodeURIComponent(`Hola Mr Brook! Hice el escáner de rostro en la web — me detectó tipo "${typeName}". Quiero reservar una consulta para ver qué cortes me van.`);
       ctaBtn.href = `https://api.whatsapp.com/send/?phone=593969012964&text=${msg}`;
     }
     showStep('result');
@@ -1843,25 +2187,74 @@ const Scanner = (() => {
     showStep('error');
   }
 
+  // === MULTI-STAGE ANALYSIS — choreographed ~6 second scan ===
   async function analyzeImage(imgEl) {
+    showStep('analyzing');
+    setStage(0);
     $('scanner-progress').textContent = 'Cargando modelo IA…';
+
     let fm;
     try { fm = await loadModel(); }
     catch (e) { console.error(e); return showError('No pudimos cargar el modelo IA. Verificá tu conexión y probá de nuevo.'); }
 
-    $('scanner-progress').textContent = 'Detectando rostro…';
+    // Stage 0: detecting face
+    setStage(0);
+    $('scanner-progress').textContent = 'Detectando rostro en la imagen…';
+    await wait(900);
+
     let result = null;
     fm.onResults(r => { result = r; });
-
     try { await fm.send({ image: imgEl }); }
     catch (e) { console.error(e); return showError('Error procesando la imagen. Probá con otra foto.'); }
 
     if (!result || !result.multiFaceLandmarks || !result.multiFaceLandmarks.length) {
       return showError('No detectamos un rostro en la foto. Probá con una imagen frontal y bien iluminada.');
     }
-    $('scanner-progress').textContent = 'Calculando proporciones…';
-    const { shape } = classifyFace(result.multiFaceLandmarks[0]);
-    setTimeout(() => showResult(shape), 700);
+
+    const landmarks = result.multiFaceLandmarks[0];
+
+    // Stage 1: mapping 468 points (animated reveal)
+    setStage(1);
+    $('scanner-progress').textContent = `Mapeando ${landmarks.length} puntos faciales…`;
+    await animateLandmarks(imgEl, landmarks, 0, 1, 1400);
+
+    // Stage 2: golden ratio calculation
+    setStage(2);
+    $('scanner-progress').textContent = 'Calculando proporciones áureas…';
+    drawLandmarks(imgEl, landmarks, 1);
+    await wait(1300);
+
+    // Stage 3: comparing with database
+    setStage(3);
+    $('scanner-progress').textContent = 'Comparando con base de datos de rostros…';
+    await wait(1100);
+
+    // Stage 4: generating analysis
+    setStage(4);
+    $('scanner-progress').textContent = 'Generando análisis personalizado…';
+    const classified = classifyFace(landmarks);
+    await wait(900);
+
+    // Mark final stage as done
+    setStage(5);
+    showResult(classified);
+  }
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function animateLandmarks(imgEl, landmarks, from, to, duration) {
+    return new Promise(resolve => {
+      const start = Date.now();
+      const tick = setInterval(() => {
+        const t = Math.min((Date.now() - start) / duration, 1);
+        const progress = from + (to - from) * t;
+        drawLandmarks(imgEl, landmarks, progress);
+        if (t >= 1) {
+          clearInterval(tick);
+          resolve();
+        }
+      }, 30); // ~33fps using setInterval (works in background tabs)
+    });
   }
 
   function processFile(file) {
@@ -1946,6 +2339,10 @@ const Scanner = (() => {
 
   function reset() {
     stopCamera();
+    // Clear canvas + reset stages
+    const canvas = $('scanner-landmarks-canvas');
+    if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    document.querySelectorAll('.scan-stage').forEach(el => el.classList.remove('active', 'done'));
     showStep('intro');
   }
 

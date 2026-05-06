@@ -132,8 +132,9 @@
     body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: var(--gold-light); background: rgba(200,176,138,0.05); }
     body.cursor-text #cursor-dot { width: 2px; height: 28px; border-radius: 1px; }
     body.cursor-text #cursor-ring { opacity: 0; }
-    @media (hover: none) {
-      #cursor-dot, #cursor-ring { display: none; }
+    @media (hover: none), (pointer: coarse), (max-width: 760px) {
+      #cursor-dot, #cursor-ring { display: none !important; }
+      body, a, button, .interactive { cursor: auto !important; }
     }
 
     /* NOISE GRAIN */
@@ -593,6 +594,10 @@
       animation: shapeReveal 0.8s var(--ease-out) both;
     }
     .scanner-shape-visual svg { width: 100%; height: 100%; }
+    .scanner-shape-visual .face-vector-svg { overflow: visible; }
+    .scanner-shape-visual .face-outline { stroke-width: 2.7; }
+    .scanner-shape-visual .face-detail { opacity: 0.55; stroke-width: 1.8; }
+    .scanner-shape-visual .face-guide { opacity: 0.22; stroke-dasharray: 4 5; }
     @keyframes shapeReveal {
       from { opacity: 0; transform: scale(0.6) rotate(-6deg); }
       to { opacity: 1; transform: scale(1) rotate(0); }
@@ -653,7 +658,25 @@
     }
 
     @media (max-width: 600px) {
-      .scanner-stage { padding: 32px 22px; border-radius: 24px; }
+      .scanner-section { padding: 88px 16px 110px; }
+      .scanner-inner { max-width: 100%; }
+      .scanner-header { margin-bottom: 32px; }
+      .scanner-header h2 { font-size: clamp(34px, 11vw, 46px); }
+      .scanner-header p { font-size: 14px; }
+      .scanner-stage { max-width: 100%; padding: 28px 18px; border-radius: 24px; }
+      .scanner-step { min-height: unset; }
+      .scanner-preview-wrap { max-width: min(330px, calc(100vw - 60px)); border-radius: 18px; }
+      .scanner-stages { max-width: 100%; }
+      .scan-stage { gap: 8px; padding: 8px 10px; }
+      .stage-num { width: 22px; }
+      .stage-text { font-size: 11px; line-height: 1.25; }
+      .scanner-cta-row { width: 100%; gap: 10px; }
+      .scanner-cta-row .btn-primary,
+      .scanner-cta-row .btn-ghost { width: 100%; max-width: 260px; justify-content: center; }
+      .scanner-shape-visual { width: 150px; height: 178px; margin-bottom: 18px; }
+      .scanner-tech { padding: 14px; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .scanner-final-cta { padding: 18px; }
       .scanner-cuts { grid-template-columns: 1fr; }
     }
 
@@ -760,13 +783,33 @@
     /* SOCIAL */
     .social-section { background: var(--black); padding: 100px 0 80px; border-top: 1px solid rgba(138,106,75,0.08); }
     .social-inner { padding: 0 40px; max-width: 1120px; margin: 0 auto 38px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px; }
-    .social-strip-wrap { position: relative; }
-    .social-fade-l { position: absolute; left: 0; top: 0; bottom: 0; width: 80px; background: linear-gradient(to right, var(--black), transparent); pointer-events: none; z-index: 2; }
-    .social-fade-r { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: linear-gradient(to left, var(--black), transparent); pointer-events: none; z-index: 2; }
-    .social-cards { display: flex; gap: 14px; padding: 14px 40px 22px; overflow-x: auto; }
-    .social-card { flex-shrink: 0; width: 180px; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; position: relative; border: 1.5px solid rgba(255,255,255,0.07); transition: all 0.4s var(--ease-out); cursor: pointer; }
-    .social-card.inactive { opacity: 0.55; transform: scale(0.97); }
-    .social-card.active { border-color: var(--gold); transform: scale(1.04); }
+    .social-strip-wrap {
+      position: relative; overflow: hidden;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    }
+    .social-track {
+      display: flex; gap: 16px; padding: 14px 0 22px;
+      width: max-content;
+      will-change: transform;
+      animation: socialScroll 45s linear infinite;
+    }
+    @keyframes socialScroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%, 0, 0); } }
+    .social-track:hover { animation-play-state: paused; }
+    .social-card {
+      flex-shrink: 0; width: 200px; aspect-ratio: 9/16;
+      border-radius: 14px; overflow: hidden; position: relative;
+      border: 1.5px solid rgba(255,255,255,0.07);
+      transition: transform 0.45s var(--ease-out), border-color 0.3s, box-shadow 0.4s;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+      background: var(--dark);
+    }
+    .social-card:hover { transform: scale(1.04) translateY(-3px); border-color: var(--gold); box-shadow: 0 18px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,176,138,0.15); }
+    @media (max-width: 600px) {
+      .social-card { width: 158px; }
+      .social-track { animation-duration: 38s; }
+    }
     .social-card img { width: 100%; height: 100%; object-fit: cover; }
     .social-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11,11,13,0.92) 28%, transparent 65%); }
     .social-platform { position: absolute; top: 10px; left: 10px; }
@@ -900,12 +943,15 @@
     .social-modal-platform { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .social-modal-platform.ig { background: linear-gradient(135deg, #f09433, #dc2743 50%, #bc1888); }
     .social-modal-platform.tt { background: #000; }
-    .social-modal-meta .modal-title { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; flex: 1; }
+    .social-modal-meta .modal-title { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; flex: 1; min-width: 0; }
     .social-modal-meta .modal-link { font-size: 11px; color: var(--gold-bright); text-decoration: none; padding: 6px 12px; border-radius: 100px; border: 1px solid rgba(200,176,138,0.3); white-space: nowrap; }
     .social-modal-meta .modal-link:hover { background: rgba(200,176,138,0.1); }
     @media (max-width: 480px) {
+      #social-modal { padding: 14px; }
       .social-modal-panel { max-width: 100%; }
-      .social-modal-close { top: 8px; right: 8px; }
+      .social-modal-close { top: 10px; right: 10px; width: 36px; height: 36px; }
+      .social-modal-meta { padding-right: 60px; }
+      .social-modal-meta .modal-link { max-width: 112px; overflow: hidden; text-overflow: ellipsis; }
     }
 
     /* FLOAT BUTTONS — clean, no pulse */
@@ -913,13 +959,23 @@
       position: fixed; right: 24px; z-index: 900;
       width: 56px; height: 56px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      transition: transform 0.3s var(--ease-out), box-shadow 0.3s;
+      transition: transform 0.3s var(--ease-out), box-shadow 0.3s, opacity 0.25s ease;
       will-change: transform;
     }
     #wa-float { bottom: 24px; background: #25D366; box-shadow: 0 6px 22px rgba(37,211,102,0.42); }
     #wa-float:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 32px rgba(37,211,102,0.55); }
     #ig-float { bottom: 90px; background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); box-shadow: 0 6px 22px rgba(220,39,67,0.4); }
     #ig-float:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 32px rgba(220,39,67,0.55); }
+    @media (max-width: 700px) {
+      .float-btn { right: 14px; width: 52px; height: 52px; }
+      #wa-float { bottom: 16px; }
+      #ig-float { bottom: 78px; }
+      body.scanner-focus .float-btn {
+        opacity: 0;
+        transform: translateX(88px) scale(0.88);
+        pointer-events: none;
+      }
+    }
 
     /* RESPONSIVE */
     @media (max-width: 980px) {
@@ -1174,7 +1230,7 @@ Domingo: 10:00 – 17:30</p>
 </section>
 
 <!-- SOCIAL -->
-<section class="social-section">
+<section id="redes" class="social-section">
   <div class="social-inner">
     <div>
       <div class="section-label"><span>@mrbrook.bs</span></div>
@@ -1192,9 +1248,7 @@ Domingo: 10:00 – 17:30</p>
     </div>
   </div>
   <div class="social-strip-wrap">
-    <div class="social-fade-l"></div>
-    <div class="social-fade-r"></div>
-    <div class="social-cards" id="social-cards"></div>
+    <div class="social-track" id="social-track"></div>
   </div>
 </section>
 
@@ -1475,58 +1529,71 @@ const SERVICE_GROUPS = [
 ];
 
 // Forma de rostro detectada — 9 tipos primarios + combinaciones detectables
+function faceSvg(outlinePath) {
+  return `<svg class="face-vector-svg" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path class="face-detail" d="M33 66 C25 67 23 78 27 89 C29 95 32 99 36 98" />
+    <path class="face-detail" d="M87 66 C95 67 97 78 93 89 C91 95 88 99 84 98" />
+    <path class="face-detail" d="M47 132 C47 139 42 142 35 145" />
+    <path class="face-detail" d="M73 132 C73 139 78 142 85 145" />
+    <path class="face-detail" d="M40 145 C50 149 70 149 80 145" />
+    <path class="face-guide" d="M60 20 C49 27 44 38 43 52" />
+    <path class="face-guide" d="M60 20 C71 27 76 38 77 52" />
+    <path class="face-outline" d="${outlinePath}" />
+  </svg>`;
+}
+
 const FACE_SHAPES = {
   oval: {
     label: 'Ovalado',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="65" rx="35" ry="55" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 14 C39 14 28 36 28 68 C28 105 43 132 60 136 C77 132 92 105 92 68 C92 36 81 14 60 14 Z'),
     short: 'El rostro más versátil',
     desc: 'Tu rostro tiene proporciones equilibradas: el ancho de la frente, los pómulos y la mandíbula están en armonía, y la longitud es ligeramente mayor al ancho. Esta es considerada la forma más balanceada — casi cualquier corte funciona, pero hay variantes que te van a hacer brillar más que otras.'
   },
   round: {
     label: 'Redondo',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="65" r="48" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 23 C38 23 23 43 23 70 C23 101 39 126 60 130 C81 126 97 101 97 70 C97 43 82 23 60 23 Z'),
     short: 'Suave y juvenil',
     desc: 'Tu rostro tiene ancho y longitud similares, con curvas suaves en mejillas y mandíbula. Visualmente da una sensación juvenil y amable. Los cortes ideales para vos son los que agregan altura y estructura, alargando ópticamente la cara.'
   },
   square: {
     label: 'Cuadrado',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="14" width="72" height="102" rx="14" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 17 C39 17 29 35 29 64 L29 99 C31 120 45 136 60 138 C75 136 89 120 91 99 L91 64 C91 35 81 17 60 17 Z'),
     short: 'Mandíbula marcada',
     desc: 'Tu rostro tiene una mandíbula angular y bien definida, con frente y pómulos del mismo ancho. Es una estructura fuerte y de carácter. Los mejores cortes son los que suavizan los ángulos sin tapar tu definición natural — texturas, capas y algo de volumen arriba.'
   },
   rectangle: {
     label: 'Rectangular',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="10" width="60" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 10 C43 10 34 27 34 61 L34 105 C36 124 48 139 60 141 C72 139 84 124 86 105 L86 61 C86 27 77 10 60 10 Z'),
     short: 'Largo y estructurado',
     desc: 'Tu rostro es alargado con líneas rectas y mandíbula definida. Combina la altura de un rostro alargado con la angulosidad de uno cuadrado. Buscamos cortes con volumen lateral y textura suave que aporten ancho visual sin perder el carácter.'
   },
   oblong: {
     label: 'Alargado',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="65" rx="28" ry="58" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 8 C43 8 34 30 34 67 C34 109 46 137 60 142 C74 137 86 109 86 67 C86 30 77 8 60 8 Z'),
     short: 'Vertical y elegante',
     desc: 'Tu rostro es notablemente más largo que ancho, con curvas suaves. Para equilibrar las proporciones, evitamos altura extra arriba y buscamos volumen lateral o capas que aporten ancho visual. La barba bien recortada también ayuda mucho.'
   },
   heart: {
     label: 'Corazón',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 118 C20 100, 8 65, 8 38 C8 20, 22 10, 35 10 C42 10, 47 14, 50 20 C53 14, 58 10, 65 10 C78 10, 92 20, 92 38 C92 65, 80 100, 50 118 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 15 C34 15 22 35 24 63 C27 96 43 124 60 138 C77 124 93 96 96 63 C98 35 86 15 60 15 Z'),
     short: 'Frente amplia, mentón fino',
     desc: 'Tu frente es más ancha que tu mandíbula y tu mentón es notablemente puntiagudo. Es una estructura muy fotogénica que requiere balance: los cortes ideales son los que equilibran la parte superior y agregan peso visual abajo (barba, textura en la nuca).'
   },
   diamond: {
     label: 'Diamante',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L92 65 L50 122 L8 65 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 14 C45 15 36 32 32 55 C23 67 25 87 36 104 C43 118 52 132 60 139 C68 132 77 118 84 104 C95 87 97 67 88 55 C84 32 75 15 60 14 Z'),
     short: 'Pómulos protagonistas',
     desc: 'Tu rostro destaca por pómulos marcados, mientras que la frente y el mentón son más estrechos. Es una estructura única y muy estética. Los cortes ideales son los que aportan volumen al frente o los lados para balancear el ancho de los pómulos.'
   },
   triangle: {
     label: 'Triangular',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 12 L92 122 L8 122 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 16 C44 16 35 34 34 58 C27 78 30 106 42 126 C48 136 54 140 60 141 C66 140 72 136 78 126 C90 106 93 78 86 58 C85 34 76 16 60 16 Z'),
     short: 'Mandíbula amplia',
     desc: 'Tu mandíbula es más ancha que tu frente — una estructura masculina y de presencia fuerte. Los cortes ideales aportan volumen y peso en la parte superior para balancear visualmente la mandíbula y crear armonía global.'
   },
   pentagon: {
     label: 'Pentagonal',
-    svg: '<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L88 42 L78 122 L22 122 L12 42 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>',
+    svg: faceSvg('M60 12 C42 12 31 30 30 56 C25 76 30 106 44 128 C50 137 56 141 60 141 C64 141 70 137 76 128 C90 106 95 76 90 56 C89 30 78 12 60 12 Z'),
     short: 'Estructura única',
     desc: 'Tu rostro combina pómulos prominentes con mandíbula sólida y un mentón definido. Es una estructura poco común y muy distintiva. Los mejores cortes la enmarcan con textura controlada y volumen estratégico arriba.'
   }
@@ -1541,18 +1608,15 @@ const PRODUCTS = [
   { brand: 'Mr Brook', name: 'Aceite de barba', desc: 'Suaviza, nutre y da brillo a la barba.', img: 'assets/generated/beard-razor.png', wa: 'Hola! Me interesa el aceite de barba.' }
 ];
 
-// Social — alterna TikTok / Instagram con URLs reales.
-// TikTok auto-actualiza thumbnail vía oEmbed (CORS-friendly, sin auth).
-// Instagram requiere Graph API para auto-update (ver comentario al final del JS).
+// Social: solo videos reales. IG queda con portada local tomada de og:image.
+// TikTok auto-actualiza thumbnail via oEmbed; Instagram requiere Graph API para auto-update.
 const SOCIAL_VIDEOS = [
   { platform: 'tt', title: 'Permanente Coreana', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7434181309368438072', thumb: 'assets/styles/04-curly-top.png' },
-  { platform: 'ig', title: 'Cortes en Tendencia', cat: 'cortes', url: 'https://www.instagram.com/mrbrook.bs/reel/C8xOTB3xbTd/', thumb: 'assets/styles/01-textured-crop.png' },
+  { platform: 'ig', title: 'Cortes en Tendencia', cat: 'cortes', url: 'https://www.instagram.com/mrbrook.bs/reel/C8xOTB3xbTd/', thumb: 'assets/social/ig-cortes-tendencia.jpg' },
   { platform: 'tt', title: 'Ondas Tipo 2B', cat: 'permanente', url: 'https://www.tiktok.com/@mrbrook.bs/video/7467639832466967814', thumb: 'assets/styles/03-mullet-perm.png' },
-  { platform: 'ig', title: 'Proyecto Mr Brook · Salinas', cat: 'apertura', url: 'https://www.instagram.com/mrbrook.bs/reel/C5oTl5nOoxR/', thumb: 'assets/render/shop-balcony.png' },
+  { platform: 'ig', title: 'Proyecto Mr Brook · Salinas', cat: 'apertura', url: 'https://www.instagram.com/mrbrook.bs/reel/C5oTl5nOoxR/', thumb: 'assets/social/ig-proyecto-salinas.jpg' },
   { platform: 'tt', title: 'Resultado 2B', cat: 'antes/después', url: 'https://www.tiktok.com/@mrbrook.bs/video/7476557735870385463', thumb: 'assets/generated/curly-hair.png' },
-  { platform: 'ig', title: 'Más reels en Instagram', cat: 'feed', url: 'https://www.instagram.com/mrbrook.bs/reels/', thumb: 'assets/styles/05-platinum.png' },
-  { platform: 'tt', title: 'Permanente Rizos', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7423866155875503366', thumb: 'assets/styles/04-curly-top.png' },
-  { platform: 'ig', title: '@mrbrook.bs', cat: 'perfil', url: 'https://www.instagram.com/mrbrook.bs/', thumb: 'assets/styles/06-copper.png' }
+  { platform: 'tt', title: 'Permanente Rizos', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7423866155875503366', thumb: 'assets/styles/04-curly-top.png' }
 ];
 
 // Google-style reviews. Replace with Google Places API in production.
@@ -1646,9 +1710,8 @@ PRODUCTS.forEach(p => {
   productsGrid.appendChild(card);
 });
 
-// Social cards — click opens modal with REAL embed (TikTok / Instagram)
-const socialCardsEl = document.getElementById('social-cards');
-let activeSocial = 0;
+// Social cards — auto-scroll marquee, click opens modal with REAL embed
+const socialTrackEl = document.getElementById('social-track');
 
 // Cache state of Instagram embed.js script load
 let igEmbedScriptLoaded = false;
@@ -1769,41 +1832,38 @@ document.getElementById('social-modal-close')?.addEventListener('click', closeSo
 document.getElementById('social-modal')?.addEventListener('click', e => { if (e.target.id === 'social-modal') closeSocialModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSocialModal(); });
 
-SOCIAL_VIDEOS.forEach((v, i) => {
+// Build cards (doubled for seamless infinite marquee)
+const doubled = [...SOCIAL_VIDEOS, ...SOCIAL_VIDEOS];
+doubled.forEach((v, i) => {
+  const realIdx = i % SOCIAL_VIDEOS.length;
   const card = document.createElement('button');
   card.type = 'button';
-  card.className = 'social-card interactive' + (i === activeSocial ? ' active' : ' inactive');
-  card.dataset.idx = i;
+  card.className = 'social-card interactive';
+  card.dataset.idx = realIdx;
   card.addEventListener('click', () => openSocialModal(v));
-  card.style.cssText += 'background:transparent;padding:0;border-style:solid;';
+  card.style.cssText += 'padding:0;border-style:solid;';
   const badgeHtml = v.platform === 'ig'
     ? `<div class="ig-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg></div>`
     : `<div class="tt-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></div>`;
   card.innerHTML = `
-    <img src="${v.thumb}" alt="${v.title}" data-thumb-idx="${i}"/>
+    <img src="${v.thumb}" alt="${v.title}" data-thumb-real="${realIdx}"/>
     <div class="social-card-overlay"></div>
     <div class="social-platform">${badgeHtml}</div>
     <div class="social-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-    <div class="social-meta"><div class="social-title" data-title-idx="${i}">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
-  card.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.social-card').forEach((c, k) => {
-      c.classList.toggle('active', k === i);
-      c.classList.toggle('inactive', k !== i);
-    });
-    activeSocial = i;
-  });
-  socialCardsEl.appendChild(card);
+    <div class="social-meta"><div class="social-title">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
+  socialTrackEl.appendChild(card);
 });
 
-// Live update — fetch real TikTok thumbnails via oEmbed (CORS-friendly, no auth required)
+// Live update — fetch real TikTok thumbnails via oEmbed
 SOCIAL_VIDEOS.forEach((v, i) => {
   if (v.platform !== 'tt') return;
   fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(v.url)}`)
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       if (!data) return;
-      const imgEl = document.querySelector(`[data-thumb-idx="${i}"]`);
-      if (imgEl && data.thumbnail_url) {
+      const imgEls = document.querySelectorAll(`[data-thumb-real="${i}"]`);
+      imgEls.forEach(imgEl => {
+        if (!imgEl || !data.thumbnail_url) return;
         const newImg = new Image();
         newImg.onload = () => {
           imgEl.style.transition = 'opacity 0.4s ease';
@@ -1811,7 +1871,7 @@ SOCIAL_VIDEOS.forEach((v, i) => {
           setTimeout(() => { imgEl.src = data.thumbnail_url; imgEl.style.opacity = '1'; }, 200);
         };
         newImg.src = data.thumbnail_url;
-      }
+      });
     })
     .catch(() => { /* fallback to local thumb */ });
 });
@@ -2214,6 +2274,18 @@ const Scanner = (() => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, w, h);
 
+    const mediaW = imgEl?.videoWidth || imgEl?.naturalWidth || imgEl?.width || w;
+    const mediaH = imgEl?.videoHeight || imgEl?.naturalHeight || imgEl?.height || h;
+    const scale = Math.max(w / mediaW, h / mediaH);
+    const drawW = mediaW * scale;
+    const drawH = mediaH * scale;
+    const offsetX = (w - drawW) / 2;
+    const offsetY = (h - drawH) / 2;
+    const toCanvas = p => ({
+      x: offsetX + p.x * drawW,
+      y: offsetY + p.y * drawH
+    });
+
     // Reveal subset based on progress
     const total = landmarks.length;
     const revealCount = Math.floor(total * progress);
@@ -2224,8 +2296,9 @@ const Scanner = (() => {
 
     for (let i = 0; i < revealCount; i++) {
       const p = landmarks[i];
+      const pt = toCanvas(p);
       ctx.beginPath();
-      ctx.arc(p.x * w, p.y * h, 1.1, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, 1.1, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -2236,9 +2309,9 @@ const Scanner = (() => {
       ctx.shadowBlur = 8;
       KEY_POINTS.forEach(idx => {
         if (landmarks[idx]) {
-          const p = landmarks[idx];
+          const p = toCanvas(landmarks[idx]);
           ctx.beginPath();
-          ctx.arc(p.x * w, p.y * h, 3, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
           ctx.fill();
         }
       });
@@ -2251,9 +2324,11 @@ const Scanner = (() => {
       ctx.shadowBlur = 0;
       ctx.setLineDash([3, 3]);
       const draw = (a, b) => {
+        const pa = toCanvas(landmarks[a]);
+        const pb = toCanvas(landmarks[b]);
         ctx.beginPath();
-        ctx.moveTo(landmarks[a].x * w, landmarks[a].y * h);
-        ctx.lineTo(landmarks[b].x * w, landmarks[b].y * h);
+        ctx.moveTo(pa.x, pa.y);
+        ctx.lineTo(pb.x, pb.y);
         ctx.stroke();
       };
       draw(10, 152);   // length
@@ -2564,6 +2639,16 @@ const Scanner = (() => {
   return { init };
 })();
 Scanner.init();
+
+const scannerSectionForFloats = document.querySelector('.scanner-section');
+if (scannerSectionForFloats && 'IntersectionObserver' in window) {
+  const scannerFloatObserver = new IntersectionObserver(entries => {
+    const isMobile = window.matchMedia('(max-width: 700px)').matches;
+    const isVisible = entries.some(entry => entry.isIntersecting && entry.intersectionRatio > 0.22);
+    document.body.classList.toggle('scanner-focus', isMobile && isVisible);
+  }, { threshold: [0, 0.22, 0.6] });
+  scannerFloatObserver.observe(scannerSectionForFloats);
+}
 
 /* ============================================================
    GOOGLE PLACES INTEGRATION (placeholder for future backend)

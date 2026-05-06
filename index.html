@@ -493,6 +493,28 @@
       position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 3;
     }
+    .scanner-face-frame {
+      position: absolute; inset: 10% 20%; z-index: 4;
+      pointer-events: none; border: 1.5px solid rgba(217,193,154,0.65);
+      border-radius: 48% 48% 44% 44%;
+      box-shadow: 0 0 0 999px rgba(0,0,0,0.08), 0 0 28px rgba(200,176,138,0.18);
+      opacity: 0.85;
+    }
+    .scanner-face-frame::before,
+    .scanner-face-frame::after {
+      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+      width: 58%; height: 1px; background: rgba(217,193,154,0.24);
+    }
+    .scanner-face-frame::before { top: 36%; }
+    .scanner-face-frame::after { top: 61%; }
+    .scanner-live-hint {
+      position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+      z-index: 5; width: max-content; max-width: calc(100% - 28px);
+      padding: 7px 12px; border-radius: 100px;
+      background: rgba(11,11,13,0.72); border: 1px solid rgba(200,176,138,0.28);
+      color: rgba(255,255,255,0.78); font-size: 10px; letter-spacing: 0.12em;
+      text-transform: uppercase; text-align: center; backdrop-filter: blur(8px);
+    }
     .scanner-hud {
       position: absolute; top: 14px; left: 14px; z-index: 4;
       pointer-events: none;
@@ -585,6 +607,11 @@
       font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--gold-bright); margin-top: 8px; text-align: center;
     }
+    .scanner-camera-actions {
+      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .scanner-camera-actions[hidden] { display: none; }
 
     .scanner-shape-visual {
       width: 130px; height: 170px; margin: 0 auto 22px;
@@ -636,6 +663,12 @@
     .tech-metric { background: rgba(11,11,13,0.4); border-radius: 8px; padding: 10px 12px; text-align: left; }
     .tech-metric-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
     .tech-metric-value { font-family: var(--serif); font-size: 18px; font-weight: 600; color: #fff; }
+    .scanner-insight {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.62); font-size: 12px; line-height: 1.55;
+      text-align: left;
+    }
 
     .scanner-final-cta {
       background: linear-gradient(135deg, rgba(200,176,138,0.1), rgba(138,106,75,0.04));
@@ -666,6 +699,8 @@
       .scanner-stage { max-width: 100%; padding: 28px 18px; border-radius: 24px; }
       .scanner-step { min-height: unset; }
       .scanner-preview-wrap { max-width: min(330px, calc(100vw - 60px)); border-radius: 18px; }
+      .scanner-face-frame { inset: 9% 18%; }
+      .scanner-live-hint { font-size: 9px; letter-spacing: 0.1em; }
       .scanner-stages { max-width: 100%; }
       .scan-stage { gap: 8px; padding: 8px 10px; }
       .stage-num { width: 22px; }
@@ -673,6 +708,8 @@
       .scanner-cta-row { width: 100%; gap: 10px; }
       .scanner-cta-row .btn-primary,
       .scanner-cta-row .btn-ghost { width: 100%; max-width: 260px; justify-content: center; }
+      .scanner-camera-actions .btn-primary,
+      .scanner-camera-actions .btn-ghost { width: 100%; max-width: 260px; justify-content: center; }
       .scanner-shape-visual { width: 150px; height: 178px; margin-bottom: 18px; }
       .scanner-tech { padding: 14px; }
       .tech-grid { grid-template-columns: 1fr; }
@@ -792,7 +829,7 @@
       display: flex; gap: 16px; padding: 14px 0 22px;
       width: max-content;
       will-change: transform;
-      animation: socialScroll 90s linear infinite;
+      animation: socialScroll 180s linear infinite !important;
     }
     @keyframes socialScroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%, 0, 0); } }
     .social-track:hover { animation-play-state: running; }
@@ -808,7 +845,7 @@
     .social-card:hover { transform: scale(1.04) translateY(-3px); border-color: var(--gold); box-shadow: 0 18px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,176,138,0.15); }
     @media (max-width: 600px) {
       .social-card { width: 158px; }
-      .social-track { animation-duration: 78s; }
+      .social-track { animation-duration: 160s !important; }
     }
     .social-card img { width: 100%; height: 100%; object-fit: cover; }
     .social-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11,11,13,0.92) 28%, transparent 65%); }
@@ -1327,6 +1364,8 @@ Domingo: 10:00 – 17:30</p>
           <img id="scanner-preview-img" src="" alt="Preview"/>
           <video id="scanner-preview-video" autoplay playsinline muted webkit-playsinline></video>
           <canvas id="scanner-landmarks-canvas"></canvas>
+          <div class="scanner-face-frame"></div>
+          <div class="scanner-live-hint" id="scanner-live-hint">Rostro centrado · luz frontal</div>
           <div class="scanner-grid-overlay"></div>
           <div class="scanner-scanline"></div>
           <div class="scanner-corners"></div>
@@ -1342,6 +1381,10 @@ Domingo: 10:00 – 17:30</p>
           <div class="scan-stage" data-i="4"><span class="stage-num">05</span><span class="stage-text">Generando análisis personalizado</span></div>
         </div>
         <div class="scanner-progress" id="scanner-progress">Iniciando escáner…</div>
+        <div class="scanner-camera-actions" id="scanner-camera-actions" hidden>
+          <button class="btn-primary interactive" id="scanner-btn-capture-now">Capturar ahora</button>
+          <button class="btn-ghost interactive" id="scanner-btn-cancel-camera">Cancelar</button>
+        </div>
       </div>
 
       <!-- STEP 3: Result -->
@@ -1364,8 +1407,9 @@ Domingo: 10:00 – 17:30</p>
             <div class="tech-metric"><div class="tech-metric-label">Largo / Ancho</div><div class="tech-metric-value" id="tech-lw">—</div></div>
             <div class="tech-metric"><div class="tech-metric-label">Mandíbula / Pómulos</div><div class="tech-metric-value" id="tech-jw">—</div></div>
             <div class="tech-metric"><div class="tech-metric-label">Frente / Mandíbula</div><div class="tech-metric-value" id="tech-fj">—</div></div>
-            <div class="tech-metric"><div class="tech-metric-label">Puntos analizados</div><div class="tech-metric-value">478</div></div>
+            <div class="tech-metric"><div class="tech-metric-label">Calidad de foto</div><div class="tech-metric-value" id="tech-quality">—</div></div>
           </div>
+          <div class="scanner-insight" id="scanner-insight">Lectura calibrada por encuadre, proporción y simetría facial.</div>
         </div>
         <div class="scanner-final-cta">
           <p class="scanner-final-msg">En Mr Brook te recomendamos los <strong>mejores cortes basados en tu tipo de rostro</strong>. Te esperamos en sede para una asesoría completa con nuestra tripulación.</p>
@@ -2201,6 +2245,64 @@ const Scanner = (() => {
   }
 
   // === SCORING-BASED CLASSIFIER (9 shape types + combinations) ===
+  function analyzeFaceQuality(landmarks) {
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const top = landmarks[10], chin = landmarks[152];
+    const cheekR = landmarks[234], cheekL = landmarks[454];
+    const nose = landmarks[1] || landmarks[4];
+    const eyeR = landmarks[33], eyeL = landmarks[263];
+
+    const faceW = dist(cheekR, cheekL);
+    const faceH = dist(top, chin);
+    const faceArea = faceW * faceH;
+    const centerX = (cheekR.x + cheekL.x + nose.x) / 3;
+    const centerY = (top.y + chin.y + nose.y) / 3;
+    const centerOffset = Math.hypot((centerX - 0.5) / 0.5, (centerY - 0.52) / 0.52);
+    const noseToR = dist(nose, cheekR);
+    const noseToL = dist(nose, cheekL);
+    const yaw = Math.abs(noseToR - noseToL) / Math.max(0.001, noseToR + noseToL);
+    const tilt = eyeR && eyeL ? Math.abs(eyeL.y - eyeR.y) / Math.max(0.001, Math.abs(eyeL.x - eyeR.x)) : 0;
+
+    const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v));
+    let qualityScore = 1;
+    qualityScore -= clamp((centerOffset - 0.22) / 0.55) * 0.28;
+    qualityScore -= clamp((0.075 - faceArea) / 0.075) * 0.22;
+    qualityScore -= clamp((faceArea - 0.36) / 0.28) * 0.16;
+    qualityScore -= clamp((yaw - 0.18) / 0.28) * 0.2;
+    qualityScore -= clamp((tilt - 0.12) / 0.24) * 0.14;
+    qualityScore = clamp(qualityScore);
+
+    const hints = [];
+    if (centerOffset > 0.38) hints.push('rostro descentrado');
+    if (faceArea < 0.075) hints.push('rostro muy lejos');
+    if (faceArea > 0.36) hints.push('rostro muy cerca');
+    if (yaw > 0.22) hints.push('rostro girado');
+    if (tilt > 0.18) hints.push('cabeza inclinada');
+
+    const label = qualityScore >= 0.82 ? 'Alta' : qualityScore >= 0.62 ? 'Media' : 'Baja';
+    return { score: qualityScore, label, hints, centerOffset, faceArea, yaw, tilt };
+  }
+
+  function buildFaceShapeScores(r) {
+    const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v));
+    const close = (value, target, tolerance) => clamp(1 - Math.abs(value - target) / tolerance);
+    const above = (value, target, range) => clamp((value - target) / range);
+    const below = (value, target, range) => clamp((target - value) / range);
+    const mix = parts => parts.reduce((sum, part) => sum + part[0] * part[1], 0);
+
+    return {
+      oval: mix([[0.42, close(r.lw, 1.35, 0.34)], [0.24, close(r.jw, 0.83, 0.24)], [0.22, close(r.fj, 1.0, 0.3)], [0.12, close(r.chinSharp, 0.66, 0.26)]]),
+      round: mix([[0.44, close(r.lw, 1.08, 0.28)], [0.24, close(r.jw, 0.88, 0.25)], [0.2, above(r.chinSharp, 0.58, 0.22)], [0.12, close(r.fj, 1.0, 0.32)]]),
+      square: mix([[0.34, close(r.lw, 1.14, 0.34)], [0.34, above(r.jw, 0.9, 0.18)], [0.2, above(r.chinSharp, 0.58, 0.24)], [0.12, close(r.fj, 1.0, 0.32)]]),
+      rectangle: mix([[0.42, close(r.lw, 1.55, 0.36)], [0.3, above(r.jw, 0.88, 0.2)], [0.16, above(r.chinSharp, 0.55, 0.25)], [0.12, close(r.fj, 1.0, 0.34)]]),
+      oblong: mix([[0.54, above(r.lw, 1.45, 0.38)], [0.24, below(r.jw, 0.9, 0.25)], [0.12, close(r.fj, 1.0, 0.32)], [0.1, close(r.chinSharp, 0.6, 0.28)]]),
+      heart: mix([[0.4, above(r.fj, 1.12, 0.3)], [0.3, below(r.chinSharp, 0.62, 0.24)], [0.2, close(r.lw, 1.3, 0.36)], [0.1, below(r.jw, 0.9, 0.24)]]),
+      diamond: mix([[0.38, above(r.cf, 1.08, 0.24)], [0.24, below(r.jw, 0.88, 0.22)], [0.26, below(r.chinSharp, 0.62, 0.24)], [0.12, close(r.lw, 1.3, 0.36)]]),
+      triangle: mix([[0.44, below(r.fj, 0.94, 0.26)], [0.28, above(r.jw, 0.88, 0.18)], [0.18, close(r.lw, 1.25, 0.36)], [0.1, above(r.chinSharp, 0.55, 0.25)]]),
+      pentagon: mix([[0.3, close(r.cf, 1.08, 0.24)], [0.26, close(r.jw, 0.88, 0.24)], [0.24, above(r.chinSharp, 0.58, 0.25)], [0.2, close(r.lw, 1.22, 0.34)]])
+    };
+  }
+
   function classifyFace(landmarks) {
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
     // Key facial landmarks (MediaPipe Face Mesh indices)
@@ -2227,38 +2329,23 @@ const Scanner = (() => {
       cf: width / fore,             // cheek vs forehead (>1.1 = diamond/pentagon)
       chinSharp: chinW / jaw,       // pointed chin (<0.55 = sharp)
     };
-
-    // Score each shape — higher = better match
-    const scores = {
-      oval:      score(r.lw, 1.35, 0.18) * score(r.jw, 0.83, 0.15) * score(r.fj, 1.0, 0.18),
-      round:     score(r.lw, 1.05, 0.12) * score(r.jw, 0.88, 0.18) * (r.chinSharp > 0.6 ? 1 : 0.6),
-      square:    score(r.lw, 1.1, 0.15) * (r.jw > 0.92 ? 1.5 : 0.5) * (r.chinSharp > 0.6 ? 1.2 : 0.7),
-      rectangle: score(r.lw, 1.55, 0.18) * (r.jw > 0.9 ? 1.4 : 0.6) * (r.chinSharp > 0.55 ? 1.1 : 0.7),
-      oblong:    score(r.lw, 1.65, 0.15) * (r.jw < 0.88 ? 1.3 : 0.6),
-      heart:     score(r.fj, 1.25, 0.15) * (r.chinSharp < 0.6 ? 1.4 : 0.7) * score(r.lw, 1.3, 0.2),
-      diamond:   score(r.cf, 1.18, 0.12) * (r.jw < 0.85 ? 1.3 : 0.6) * (r.chinSharp < 0.6 ? 1.3 : 0.7),
-      triangle:  (r.fj < 0.88 ? 1.5 : 0.4) * (r.jw > 0.9 ? 1.2 : 0.7) * score(r.lw, 1.25, 0.2),
-      pentagon:  score(r.cf, 1.1, 0.15) * (r.jw > 0.85 ? 1.2 : 0.6) * (r.chinSharp > 0.55 ? 1.1 : 0.7) * score(r.lw, 1.2, 0.18),
-    };
-
-    function score(value, target, tolerance) {
-      const diff = Math.abs(value - target);
-      return Math.max(0, 1 - (diff / tolerance));
-    }
+    const quality = analyzeFaceQuality(landmarks);
 
     // Sort by score, get primary + secondary
-    const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const improvedScores = buildFaceShapeScores(r);
+    const ranked = Object.entries(improvedScores).sort((a, b) => b[1] - a[1]);
     const primary = ranked[0];
     const secondary = ranked[1];
 
-    // If secondary is within 80% of primary, it's a combination
-    const isCombo = primary[1] > 0 && (secondary[1] / primary[1]) > 0.78 && primary[0] !== secondary[0];
+    const isCombo = primary[1] >= 0.62 && secondary[1] >= 0.58 && (primary[1] - secondary[1]) <= 0.08 && primary[0] !== secondary[0];
 
     return {
       primary: primary[0],
       secondary: isCombo ? secondary[0] : null,
-      scores,
-      metrics: r
+      scores: improvedScores,
+      metrics: r,
+      quality,
+      ranked
     };
   }
 
@@ -2363,9 +2450,14 @@ const Scanner = (() => {
       $('result-desc').textContent = primaryData.desc;
     }
 
-    // Confidence: based on primary score (clamped 70-98%)
+    // Confidence blends shape score, score separation and image quality.
     const primaryScore = classified.scores[classified.primary] || 0;
-    const confidence = Math.round(Math.min(98, 70 + primaryScore * 28));
+    const secondaryScore = classified.ranked?.[1]?.[1] || 0;
+    const quality = classified.quality || { score: 0.72, label: 'Media', hints: [] };
+    const separation = Math.max(0, primaryScore - secondaryScore);
+    let confidence = Math.round(58 + primaryScore * 24 + Math.min(separation, 0.18) * 58 + quality.score * 12);
+    confidence = Math.max(68, Math.min(96, confidence));
+    if (quality.score < 0.55) confidence = Math.min(confidence, 82);
     $('tech-confidence-val').textContent = confidence + '%';
 
     // Metrics
@@ -2373,6 +2465,13 @@ const Scanner = (() => {
     $('tech-lw').textContent = m.lw ? m.lw.toFixed(2) : '—';
     $('tech-jw').textContent = m.jw ? m.jw.toFixed(2) : '—';
     $('tech-fj').textContent = m.fj ? m.fj.toFixed(2) : '—';
+    $('tech-quality').textContent = quality.label;
+    const insight = $('scanner-insight');
+    if (insight) {
+      insight.textContent = quality.hints.length
+        ? `Lectura ajustada: ${quality.hints.join(', ')}. Para mayor precisión, prueba una foto frontal con luz pareja.`
+        : 'Lectura estable: rostro centrado, proporciones claras y simetría suficiente para recomendar estilo.';
+    }
 
     const ctaBtn = $('scanner-result-cta');
     if (ctaBtn) {
@@ -2390,14 +2489,27 @@ const Scanner = (() => {
   }
 
   function showError(msg) {
+    setCameraActions(false);
     if (msg) $('scanner-error-msg').textContent = msg;
     showStep('error');
+  }
+
+  function setCameraActions(visible) {
+    const actions = $('scanner-camera-actions');
+    if (actions) actions.hidden = !visible;
+  }
+
+  function setLiveHint(text) {
+    const hint = $('scanner-live-hint');
+    if (hint && text) hint.textContent = text;
   }
 
   // === MULTI-STAGE ANALYSIS — choreographed ~6 second scan ===
   async function analyzeImage(imgEl) {
     showStep('analyzing');
     setStage(0);
+    setCameraActions(false);
+    setLiveHint('Rostro centrado · luz frontal');
     $('scanner-progress').textContent = 'Cargando modelo IA…';
 
     let fm;
@@ -2419,6 +2531,11 @@ const Scanner = (() => {
     }
 
     const landmarks = result.multiFaceLandmarks[0];
+    const quality = analyzeFaceQuality(landmarks);
+    if (quality.score < 0.28) {
+      const reason = quality.hints.length ? ` Detectamos: ${quality.hints.join(', ')}.` : '';
+      return showError(`La foto no está suficientemente clara para recomendar un corte.${reason} Probá con el rostro al centro y luz frontal.`);
+    }
 
     // Stage 1: mapping 468 points (animated reveal)
     setStage(1);
@@ -2474,6 +2591,8 @@ const Scanner = (() => {
       previewImg.src = url;
       previewImg.style.display = 'block';
       $('scanner-preview-video').style.display = 'none';
+      setCameraActions(false);
+      setLiveHint('Rostro centrado · luz frontal');
       showStep('analyzing');
       analyzeImage(img);
     };
@@ -2514,6 +2633,9 @@ const Scanner = (() => {
     img.classList.add('hidden');
     video.classList.add('active');
     showStep('analyzing');
+    setStage(0);
+    setLiveHint('Rostro dentro del marco');
+    setCameraActions(false);
     $('scanner-progress').textContent = 'Solicitando acceso a cámara…';
 
     // 2. Request permission
@@ -2555,23 +2677,16 @@ const Scanner = (() => {
       return showError('La cámara no devolvió imagen (puede ser un problema de permisos o hardware). Probá subiendo una foto.');
     }
 
-    // 5. Countdown to capture
-    let countdown = 3;
-    $('scanner-progress').textContent = `Posicioná tu rostro · capturando en ${countdown}s`;
-    cameraTimer = setInterval(() => {
-      countdown--;
-      if (countdown > 0) {
-        $('scanner-progress').textContent = `Capturando en ${countdown}s…`;
-      } else {
-        clearInterval(cameraTimer);
-        cameraTimer = null;
-        captureFrame();
-      }
-    }, 1000);
+    // 5. Let the user capture when the face is framed.
+    $('scanner-progress').textContent = 'Centrá tu rostro y toca capturar';
+    setLiveHint('Centra ojos y mandíbula');
+    setCameraActions(true);
   }
 
   async function captureFrame() {
     const video = $('scanner-preview-video');
+    setCameraActions(false);
+    $('scanner-progress').textContent = 'Capturando foto…';
 
     // Wait briefly if video not yet sized
     if (!video.videoWidth) await new Promise(r => setTimeout(r, 600));
@@ -2602,6 +2717,7 @@ const Scanner = (() => {
   }
 
   function stopCamera() {
+    setCameraActions(false);
     if (cameraTimer) { clearInterval(cameraTimer); cameraTimer = null; }
     if (cameraStream) {
       cameraStream.getTracks().forEach(t => t.stop());
@@ -2614,6 +2730,7 @@ const Scanner = (() => {
     }
     const img = $('scanner-preview-img');
     if (img) img.classList.remove('hidden');
+    setLiveHint('Rostro centrado · luz frontal');
   }
 
   function reset() {
@@ -2625,6 +2742,8 @@ const Scanner = (() => {
     // Reset confidence bar
     const bar = $('tech-confidence-bar');
     if (bar) bar.style.transform = 'scaleX(0)';
+    setCameraActions(false);
+    setLiveHint('Rostro centrado · luz frontal');
     showStep('intro');
   }
 
@@ -2632,6 +2751,8 @@ const Scanner = (() => {
     $('scanner-btn-upload')?.addEventListener('click', () => $('scanner-file').click());
     $('scanner-file')?.addEventListener('change', e => { const f = e.target.files?.[0]; if (f) processFile(f); });
     $('scanner-btn-camera')?.addEventListener('click', startCamera);
+    $('scanner-btn-capture-now')?.addEventListener('click', captureFrame);
+    $('scanner-btn-cancel-camera')?.addEventListener('click', reset);
     $('scanner-btn-retry')?.addEventListener('click', reset);
     $('scanner-btn-back')?.addEventListener('click', reset);
   }

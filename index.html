@@ -156,7 +156,7 @@
       position: fixed; inset: 0; z-index: 9995; background: var(--black);
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
     }
-    #loader img { width: 56px; height: 56px; filter: brightness(10); opacity: 0; }
+    #loader img { height: 64px; width: auto; filter: brightness(0) invert(1); opacity: 0; }
     #loader .ld-text { font-family: var(--serif); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.4); opacity: 0; }
     #loader .ld-bar { width: 140px; height: 1px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; }
     #loader .ld-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 0; background: var(--gold-light); }
@@ -174,7 +174,7 @@
       white-space: nowrap;
     }
     .nav-logo { display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; margin-right: 4px; }
-    .nav-logo img { width: 26px; height: 26px; filter: brightness(10); }
+    .nav-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
     .nav-logo span { font-family: var(--serif); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; color: #fff; }
     .nav-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 4px; }
     .nav-link { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.55); padding: 6px 14px; border-radius: 100px; transition: color 0.2s, background 0.2s; }
@@ -245,11 +245,10 @@
     .hero-vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,13,0.55) 100%); }
     .hero-content { position: relative; z-index: 5; text-align: center; padding: 0 24px; max-width: 920px; width: 100%; }
     .hero-logo {
-      height: 70px; width: auto; max-width: 90px;
-      filter: brightness(10) drop-shadow(0 0 28px rgba(200,176,138,0.55));
+      width: 80px; height: auto;
+      filter: brightness(0) invert(1) drop-shadow(0 0 28px rgba(200,176,138,0.55));
       margin: 0 auto 24px; display: block;
       will-change: opacity, transform;
-      object-fit: contain;
     }
     .hero-kicker {
       font-size: 12px; font-weight: 500; letter-spacing: 0.32em;
@@ -308,10 +307,11 @@
     .marquee-track {
       display: flex; width: max-content; gap: 18px;
       will-change: transform;
-      animation: mqScroll 35s linear infinite;
-      animation-play-state: running !important;
+      animation: mqScroll 25s linear infinite;
     }
     @keyframes mqScroll { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(-50%,0,0)} }
+    /* Force GPU and disable any pause that could come from scroll-trigger */
+    .marquee-track-a { animation: mqScroll 25s linear infinite !important; animation-play-state: running !important; }
     .marquee-item {
       flex-shrink: 0; width: 240px; height: 340px;
       border-radius: 18px; overflow: hidden; position: relative;
@@ -328,7 +328,7 @@
     .marquee-item:hover img { transform: scale(1.08); }
     @media (max-width: 600px) {
       .marquee-item { width: 180px; height: 260px; }
-      .marquee-track { animation-duration: 28s; }
+      .marquee-track, .marquee-track-a { animation-duration: 20s !important; }
     }
 
     /* STATS */
@@ -482,8 +482,12 @@
       box-shadow: 0 0 0 4px rgba(200,176,138,0.08), 0 30px 60px rgba(0,0,0,0.5);
     }
     .scanner-preview-wrap img, .scanner-preview-wrap video {
-      width: 100%; height: 100%; object-fit: cover; display: block;
+      width: 100%; height: 100%; object-fit: cover;
     }
+    /* video hidden by default — JS toggles when camera is active */
+    #scanner-preview-video { display: none; }
+    #scanner-preview-video.active { display: block; }
+    #scanner-preview-img.hidden { display: none; }
     #scanner-landmarks-canvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 3;
@@ -610,6 +614,24 @@
       font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.7);
       max-width: 540px; margin: 0 auto 32px;
     }
+    /* Tech panel — confidence + metrics */
+    .scanner-tech {
+      max-width: 540px; margin: 0 auto 26px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(200,176,138,0.2);
+      border-radius: 14px;
+      padding: 16px 20px;
+    }
+    .tech-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .tech-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.5); flex-shrink: 0; }
+    .tech-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.07); border-radius: 100px; overflow: hidden; }
+    .tech-bar-fill { height: 100%; background: linear-gradient(to right, var(--gold), var(--gold-bright)); border-radius: 100px; transform-origin: left; transform: scaleX(0); transition: transform 1.4s var(--ease-out); }
+    .tech-value { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--gold-bright); flex-shrink: 0; }
+    .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .tech-metric { background: rgba(11,11,13,0.4); border-radius: 8px; padding: 10px 12px; text-align: left; }
+    .tech-metric-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+    .tech-metric-value { font-family: var(--serif); font-size: 18px; font-weight: 600; color: #fff; }
+
     .scanner-final-cta {
       background: linear-gradient(135deg, rgba(200,176,138,0.1), rgba(138,106,75,0.04));
       border: 1px solid rgba(200,176,138,0.2);
@@ -830,7 +852,23 @@
       transition: transform 0.5s var(--ease-out), opacity 0.4s var(--ease-out);
     }
     #social-modal.open .social-modal-panel { transform: scale(1); opacity: 1; }
-    .social-modal-frame { width: 100%; height: 700px; max-height: 88vh; border: 0; display: block; background: #000; }
+    .social-modal-frame { width: 100%; height: 700px; max-height: 78vh; border: 0; display: block; background: #000; }
+    .social-modal-body { min-height: 600px; max-height: 78vh; overflow-y: auto; background: #000; }
+    /* Force IG embed iframe size (IG injects iframe with height=0 by default) */
+    .social-modal-body iframe.instagram-media,
+    .social-modal-body iframe[src*="instagram.com"] {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      height: 700px !important;
+      max-height: 78vh !important;
+      min-height: 600px !important;
+      border: 0 !important;
+      background: #fff !important;
+      margin: 0 !important;
+      display: block !important;
+    }
+    .social-modal-body .instagram-media { background: #fff !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 0 !important; }
     .social-modal-loading {
       position: absolute; inset: 0; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 12px;
@@ -1233,7 +1271,7 @@ Domingo: 10:00 – 17:30</p>
       <div class="scanner-step" data-step="analyzing">
         <div class="scanner-preview-wrap">
           <img id="scanner-preview-img" src="" alt="Preview"/>
-          <video id="scanner-preview-video" style="display:none" autoplay playsinline muted></video>
+          <video id="scanner-preview-video" autoplay playsinline muted webkit-playsinline></video>
           <canvas id="scanner-landmarks-canvas"></canvas>
           <div class="scanner-grid-overlay"></div>
           <div class="scanner-scanline"></div>
@@ -1261,6 +1299,19 @@ Domingo: 10:00 – 17:30</p>
         <div class="scanner-result">
           <h3 id="result-title">Tienes un rostro <em id="result-shape" style="color: var(--gold-bright); font-style: italic;">Ovalado</em></h3>
           <p id="result-desc">Lorem ipsum descripción detallada del tipo de rostro detectado.</p>
+        </div>
+        <div class="scanner-tech" id="scanner-tech">
+          <div class="tech-row tech-confidence">
+            <span class="tech-label">Confianza del análisis</span>
+            <div class="tech-bar"><div class="tech-bar-fill" id="tech-confidence-bar"></div></div>
+            <span class="tech-value" id="tech-confidence-val">94%</span>
+          </div>
+          <div class="tech-grid">
+            <div class="tech-metric"><div class="tech-metric-label">Largo / Ancho</div><div class="tech-metric-value" id="tech-lw">—</div></div>
+            <div class="tech-metric"><div class="tech-metric-label">Mandíbula / Pómulos</div><div class="tech-metric-value" id="tech-jw">—</div></div>
+            <div class="tech-metric"><div class="tech-metric-label">Frente / Mandíbula</div><div class="tech-metric-value" id="tech-fj">—</div></div>
+            <div class="tech-metric"><div class="tech-metric-label">Puntos analizados</div><div class="tech-metric-value">478</div></div>
+          </div>
         </div>
         <div class="scanner-final-cta">
           <p class="scanner-final-msg">En Mr Brook te recomendamos los <strong>mejores cortes basados en tu tipo de rostro</strong>. Te esperamos en sede para una asesoría completa con nuestra tripulación.</p>
@@ -1292,7 +1343,7 @@ Domingo: 10:00 – 17:30</p>
     <div class="footer-grid">
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <img src="assets/logos/logo-01.png" alt="" style="width:32px;height:32px;filter:brightness(10);"/>
+          <img src="assets/logos/logo-01.png" alt="" style="height:34px;width:auto;filter:brightness(0) invert(1);"/>
           <span class="footer-brand-name">Mr Brook</span>
         </div>
         <p class="footer-brand-sub">Barber Shop & SPA<br/>Guayaquil, Ecuador</p>
@@ -1345,9 +1396,9 @@ Domingo: 10:00 – 17:30</p>
       <div class="modal-title" id="modal-title">Cargando…</div>
       <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener">Ver en app</a>
     </div>
-    <div style="position:relative">
+    <div class="social-modal-body" id="social-modal-body" style="position:relative">
       <div class="social-modal-loading"><div class="spinner"></div><span>Cargando video…</span></div>
-      <iframe class="social-modal-frame" id="social-modal-frame" src="about:blank" allow="encrypted-media; fullscreen; autoplay" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+      <!-- iframe (TikTok) or instagram-media blockquote injected by JS -->
     </div>
   </div>
 </div>
@@ -1599,47 +1650,108 @@ PRODUCTS.forEach(p => {
 const socialCardsEl = document.getElementById('social-cards');
 let activeSocial = 0;
 
-function getEmbedUrl(v) {
-  if (v.platform === 'tt') {
-    // TikTok video ID is at end of URL
-    const m = v.url.match(/\/video\/(\d+)/);
-    if (m) return `https://www.tiktok.com/embed/v2/${m[1]}?lang=es`;
-    return v.url;
-  }
-  if (v.platform === 'ig') {
-    // Instagram reel shortcode → embed URL
-    const m = v.url.match(/\/reel\/([\w-]+)/);
-    if (m) return `https://www.instagram.com/reel/${m[1]}/embed/?cr=1&v=14`;
-    // perfil/feed → fallback al perfil
-    return null;
-  }
-  return null;
+// Cache state of Instagram embed.js script load
+let igEmbedScriptLoaded = false;
+let igEmbedScriptLoading = null;
+function loadInstagramEmbed() {
+  if (igEmbedScriptLoaded) return Promise.resolve();
+  if (igEmbedScriptLoading) return igEmbedScriptLoading;
+  igEmbedScriptLoading = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.instagram.com/embed.js';
+    s.onload = () => { igEmbedScriptLoaded = true; resolve(); };
+    s.onerror = () => reject(new Error('IG embed.js failed'));
+    document.head.appendChild(s);
+  });
+  return igEmbedScriptLoading;
 }
 
 function openSocialModal(v) {
   const modal = document.getElementById('social-modal');
-  const frame = document.getElementById('social-modal-frame');
+  const body = document.getElementById('social-modal-body');
   const title = document.getElementById('modal-title');
   const link = document.getElementById('modal-link');
   const platform = document.getElementById('modal-platform');
 
-  const embedUrl = getEmbedUrl(v);
-  if (!embedUrl) {
-    // No embed available (e.g. profile link) → just open the URL
-    window.open(v.url, '_blank', 'noopener');
-    return;
-  }
-
+  // Header content
   title.textContent = v.title;
   link.href = v.url;
   link.textContent = v.platform === 'ig' ? 'Ver en Instagram' : 'Ver en TikTok';
-
   platform.className = 'social-modal-platform ' + v.platform;
   platform.innerHTML = v.platform === 'ig'
     ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="#fff"/></svg>'
     : '<svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>';
 
-  frame.src = embedUrl;
+  // Build body HTML based on platform
+  if (v.platform === 'tt') {
+    const m = v.url.match(/\/video\/(\d+)/);
+    if (m) {
+      body.innerHTML = `
+        <div class="social-modal-loading"><div class="spinner"></div><span>Cargando TikTok…</span></div>
+        <iframe class="social-modal-frame" src="https://www.tiktok.com/embed/v2/${m[1]}?lang=es" allow="encrypted-media; fullscreen; autoplay" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+      `;
+      // Hide loader when iframe loads
+      const iframe = body.querySelector('iframe');
+      if (iframe) {
+        iframe.addEventListener('load', () => {
+          const loader = body.querySelector('.social-modal-loading');
+          if (loader) loader.style.display = 'none';
+        });
+        setTimeout(() => {
+          const loader = body.querySelector('.social-modal-loading');
+          if (loader) loader.style.display = 'none';
+        }, 4000);
+      }
+    } else {
+      window.open(v.url, '_blank', 'noopener');
+      return;
+    }
+  } else if (v.platform === 'ig') {
+    const m = v.url.match(/\/reel\/([\w-]+)/) || v.url.match(/\/p\/([\w-]+)/);
+    if (m) {
+      // CANONICAL Instagram URL (no username in path) — required for embed.js
+      const shortcode = m[1];
+      const isReel = /\/reel\//.test(v.url);
+      const canonical = `https://www.instagram.com/${isReel ? 'reel' : 'p'}/${shortcode}/`;
+      body.innerHTML = `
+        <div class="social-modal-loading"><div class="spinner"></div><span>Cargando Instagram…</span></div>
+        <blockquote class="instagram-media" data-instgrm-permalink="${canonical}?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:none; max-width:100%; margin:0; min-width:0; padding:0; width:100%;">
+          <a href="${canonical}" target="_blank" rel="noopener" style="background:#FFFFFF; line-height:0; padding:0; text-align:center; text-decoration:none; width:100%;">Ver este reel en Instagram</a>
+        </blockquote>
+      `;
+      // Trigger embed processing + auto-hide loader when iframe appears
+      loadInstagramEmbed().then(() => {
+        if (window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process) {
+          window.instgrm.Embeds.process();
+        }
+        // Watch for iframe to appear, then hide loader
+        const observer = new MutationObserver(() => {
+          if (body.querySelector('iframe.instagram-media') || body.querySelector('iframe[src*="instagram.com"]')) {
+            const loader = body.querySelector('.social-modal-loading');
+            if (loader) loader.style.display = 'none';
+            observer.disconnect();
+          }
+        });
+        observer.observe(body, { childList: true, subtree: true });
+        // Safety timeout — hide loader after 5s no matter what
+        setTimeout(() => {
+          const loader = body.querySelector('.social-modal-loading');
+          if (loader) loader.style.display = 'none';
+          observer.disconnect();
+        }, 5000);
+      }).catch(() => {
+        window.open(canonical, '_blank', 'noopener');
+      });
+    } else {
+      // No reel shortcode (perfil/feed link) → open in new tab
+      window.open(v.url, '_blank', 'noopener');
+      return;
+    }
+  } else {
+    return;
+  }
+
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1647,8 +1759,11 @@ function closeSocialModal() {
   const modal = document.getElementById('social-modal');
   modal.classList.remove('open');
   document.body.style.overflow = '';
-  // Stop video playback
-  setTimeout(() => { document.getElementById('social-modal-frame').src = 'about:blank'; }, 300);
+  // Clear body to stop any embedded video and free memory
+  setTimeout(() => {
+    const body = document.getElementById('social-modal-body');
+    if (body) body.innerHTML = '<div class="social-modal-loading"><div class="spinner"></div><span>Cargando video…</span></div>';
+  }, 300);
 }
 document.getElementById('social-modal-close')?.addEventListener('click', closeSocialModal);
 document.getElementById('social-modal')?.addEventListener('click', e => { if (e.target.id === 'social-modal') closeSocialModal(); });
@@ -2173,6 +2288,17 @@ const Scanner = (() => {
       $('result-desc').textContent = primaryData.desc;
     }
 
+    // Confidence: based on primary score (clamped 70-98%)
+    const primaryScore = classified.scores[classified.primary] || 0;
+    const confidence = Math.round(Math.min(98, 70 + primaryScore * 28));
+    $('tech-confidence-val').textContent = confidence + '%';
+
+    // Metrics
+    const m = classified.metrics || {};
+    $('tech-lw').textContent = m.lw ? m.lw.toFixed(2) : '—';
+    $('tech-jw').textContent = m.jw ? m.jw.toFixed(2) : '—';
+    $('tech-fj').textContent = m.fj ? m.fj.toFixed(2) : '—';
+
     const ctaBtn = $('scanner-result-cta');
     if (ctaBtn) {
       const typeName = secondaryData ? `${primaryData.label}-${secondaryData.label}` : primaryData.label;
@@ -2180,6 +2306,12 @@ const Scanner = (() => {
       ctaBtn.href = `https://api.whatsapp.com/send/?phone=593969012964&text=${msg}`;
     }
     showStep('result');
+    // Animate confidence bar after step shows
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        $('tech-confidence-bar').style.transform = `scaleX(${confidence / 100})`;
+      }, 300);
+    });
   }
 
   function showError(msg) {
@@ -2274,57 +2406,124 @@ const Scanner = (() => {
     img.src = url;
   }
 
+  // Detailed error message based on getUserMedia error type
+  function cameraErrorMsg(e) {
+    if (!e) return 'Error desconocido al iniciar la cámara.';
+    const name = e.name || '';
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      return 'Permiso de cámara denegado. Habilitá el acceso en la barra de tu navegador (icono 🔒) o probá subiendo una foto.';
+    }
+    if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+      return 'No se encontró cámara en tu dispositivo. Probá subiendo una foto.';
+    }
+    if (name === 'NotReadableError' || name === 'TrackStartError') {
+      return 'La cámara está siendo usada por otra app. Cerrá las otras apps de cámara y probá de nuevo.';
+    }
+    if (name === 'OverconstrainedError' || name === 'ConstraintNotSatisfiedError') {
+      return 'Tu cámara no soporta la configuración solicitada. Probá subiendo una foto.';
+    }
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+      return 'La cámara solo funciona en HTTPS. Probá subiendo una foto en su lugar.';
+    }
+    return 'No pudimos acceder a tu cámara: ' + (e.message || name) + '. Probá subiendo una foto.';
+  }
+
   async function startCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return showError('Tu navegador no soporta acceso a cámara. Probá subiendo una foto.');
     }
-    try {
-      cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1080 } }
-      });
-    } catch (e) {
-      return showError('No pudimos acceder a tu cámara. Probá subiendo una foto en su lugar.');
-    }
+
+    // 1. SHOW UI first (iOS needs the <video> visible before getUserMedia for autoplay)
     const video = $('scanner-preview-video');
     const img = $('scanner-preview-img');
-    img.style.display = 'none';
-    video.style.display = 'block';
-    video.srcObject = cameraStream;
+    img.classList.add('hidden');
+    video.classList.add('active');
     showStep('analyzing');
+    $('scanner-progress').textContent = 'Solicitando acceso a cámara…';
 
+    // 2. Request permission
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+        audio: false
+      });
+    } catch (e) {
+      console.error('getUserMedia error:', e);
+      stopCamera();
+      return showError(cameraErrorMsg(e));
+    }
+
+    // 3. Attach stream
+    video.srcObject = cameraStream;
+
+    // 4. Wait for video to actually be ready (metadata loaded + dimensions known)
+    $('scanner-progress').textContent = 'Iniciando cámara…';
+    try {
+      await new Promise((resolve, reject) => {
+        let done = false;
+        const finish = () => { if (!done) { done = true; resolve(); } };
+        if (video.readyState >= 2 && video.videoWidth > 0) return finish();
+        video.onloadedmetadata = finish;
+        video.oncanplay = finish;
+        // safety: don't hang forever
+        setTimeout(finish, 4000);
+      });
+      // Try to play (iOS sometimes needs explicit play call)
+      try { await video.play(); } catch (playErr) { console.warn('video.play() warning:', playErr); }
+    } catch (e) {
+      stopCamera();
+      return showError('No pudimos iniciar el video de la cámara. Probá subiendo una foto.');
+    }
+
+    if (!video.videoWidth) {
+      stopCamera();
+      return showError('La cámara no devolvió imagen (puede ser un problema de permisos o hardware). Probá subiendo una foto.');
+    }
+
+    // 5. Countdown to capture
     let countdown = 3;
-    $('scanner-progress').textContent = `Posicioná tu rostro… capturando en ${countdown}s`;
+    $('scanner-progress').textContent = `Posicioná tu rostro · capturando en ${countdown}s`;
     cameraTimer = setInterval(() => {
       countdown--;
       if (countdown > 0) {
         $('scanner-progress').textContent = `Capturando en ${countdown}s…`;
       } else {
         clearInterval(cameraTimer);
+        cameraTimer = null;
         captureFrame();
       }
     }, 1000);
   }
 
-  function captureFrame() {
+  async function captureFrame() {
     const video = $('scanner-preview-video');
+
+    // Wait briefly if video not yet sized
+    if (!video.videoWidth) await new Promise(r => setTimeout(r, 600));
     if (!video.videoWidth) {
       stopCamera();
       return showError('La cámara no devolvió imagen. Probá subiendo una foto.');
     }
+
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
     const img = new Image();
     img.onload = () => {
       stopCamera();
       const previewImg = $('scanner-preview-img');
-      previewImg.src = img.src;
-      previewImg.style.display = 'block';
-      video.style.display = 'none';
+      previewImg.src = dataUrl;
+      previewImg.classList.remove('hidden');
       analyzeImage(img);
     };
-    img.src = canvas.toDataURL('image/jpeg', 0.92);
+    img.onerror = () => {
+      stopCamera();
+      showError('Error al capturar la foto. Probá subiendo una imagen.');
+    };
+    img.src = dataUrl;
   }
 
   function stopCamera() {
@@ -2334,7 +2533,12 @@ const Scanner = (() => {
       cameraStream = null;
     }
     const video = $('scanner-preview-video');
-    if (video) { video.srcObject = null; video.style.display = 'none'; }
+    if (video) {
+      video.srcObject = null;
+      video.classList.remove('active');
+    }
+    const img = $('scanner-preview-img');
+    if (img) img.classList.remove('hidden');
   }
 
   function reset() {
@@ -2343,6 +2547,9 @@ const Scanner = (() => {
     const canvas = $('scanner-landmarks-canvas');
     if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     document.querySelectorAll('.scan-stage').forEach(el => el.classList.remove('active', 'done'));
+    // Reset confidence bar
+    const bar = $('tech-confidence-bar');
+    if (bar) bar.style.transform = 'scaleX(0)';
     showStep('intro');
   }
 

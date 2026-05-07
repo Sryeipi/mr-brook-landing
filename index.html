@@ -304,10 +304,17 @@
 
     /* MARQUEE — single-row clean carousel, photos only, always-on scroll */
     .marquee-section { background: var(--black); padding: 56px 0 56px; overflow: hidden; }
-    .marquee-row { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%); }
+    .marquee-row {
+      position: relative; overflow-x: auto; overflow-y: hidden;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      overscroll-behavior-x: contain;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .marquee-row::-webkit-scrollbar { display: none; }
     .marquee-track {
       display: flex; width: max-content; gap: 18px;
-      will-change: transform;
+      will-change: transform; transform: translateZ(0); backface-visibility: hidden;
       animation: mqScroll 25s linear infinite;
     }
     @keyframes mqScroll { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(-50%,0,0)} }
@@ -331,6 +338,8 @@
       .marquee-item { width: 180px; height: 260px; }
       .marquee-track, .marquee-track-a { animation-duration: 20s !important; }
     }
+    .marquee-row.is-touching .marquee-track,
+    .marquee-row.is-touching .marquee-track-a { animation-play-state: paused !important; }
 
     /* STATS */
     .stats-section { background: var(--dark2); border-top: 1px solid rgba(138,106,75,0.1); border-bottom: 1px solid rgba(138,106,75,0.1); padding: 56px 40px; }
@@ -821,18 +830,22 @@
     .social-section { background: var(--black); padding: 100px 0 80px; border-top: 1px solid rgba(138,106,75,0.08); }
     .social-inner { padding: 0 40px; max-width: 1120px; margin: 0 auto 38px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px; }
     .social-strip-wrap {
-      position: relative; overflow: hidden;
+      position: relative; overflow-x: auto; overflow-y: hidden;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      overscroll-behavior-x: contain;
       -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
       mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
     }
+    .social-strip-wrap::-webkit-scrollbar { display: none; }
     .social-track {
       display: flex; gap: 16px; padding: 14px 0 22px;
       width: max-content;
-      will-change: transform;
+      will-change: transform; transform: translateZ(0); backface-visibility: hidden;
       animation: socialScroll 120s linear infinite !important;
     }
     @keyframes socialScroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%, 0, 0); } }
     .social-track:hover { animation-play-state: running; }
+    .social-strip-wrap.is-touching .social-track { animation-play-state: paused !important; }
     .social-card {
       flex-shrink: 0; width: 200px; aspect-ratio: 9/16;
       border-radius: 14px; overflow: hidden; position: relative;
@@ -1044,8 +1057,7 @@
       .reviews-summary { padding: 24px 20px; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .marquee-track { animation: none; }
-      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
@@ -1663,6 +1675,60 @@ const SOCIAL_VIDEOS = [
   { platform: 'tt', title: 'Permanente Rizos', cat: 'rizos', url: 'https://www.tiktok.com/@mrbrook.bs/video/7423866155875503366', thumb: 'assets/styles/04-curly-top.png' }
 ];
 
+const IMAGE_FALLBACK = 'assets/photos/foto-01.jpg';
+const PRELOAD_IMAGES = [
+  ...MARQUEE,
+  ...SERVICE_GROUPS.map(g => g.img),
+  ...SOCIAL_VIDEOS.map(v => v.thumb)
+];
+
+function preloadImage(src) {
+  if (!src) return;
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = src;
+}
+
+function prepareReliableImage(img, fallback = IMAGE_FALLBACK) {
+  if (!img) return;
+  img.loading = 'eager';
+  img.decoding = 'async';
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = fallback;
+  };
+}
+
+PRELOAD_IMAGES.forEach(preloadImage);
+
+function enableTouchCarousel(wrapSelector, trackSelector) {
+  const wrap = document.querySelector(wrapSelector);
+  const track = document.querySelector(trackSelector);
+  if (!wrap || !track) return;
+  let resumeTimer = null;
+  const pause = () => {
+    wrap.classList.add('is-touching');
+    track.style.animationPlayState = 'paused';
+    if (resumeTimer) clearTimeout(resumeTimer);
+  };
+  const resumeSoon = () => {
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      wrap.classList.remove('is-touching');
+      track.style.animationPlayState = '';
+    }, 1200);
+  };
+
+  wrap.addEventListener('pointerdown', pause);
+  wrap.addEventListener('pointerup', resumeSoon);
+  wrap.addEventListener('pointercancel', resumeSoon);
+  wrap.addEventListener('mouseleave', resumeSoon);
+  wrap.addEventListener('touchstart', pause, { passive: true });
+  wrap.addEventListener('touchend', resumeSoon, { passive: true });
+  wrap.addEventListener('wheel', () => { pause(); resumeSoon(); }, { passive: true });
+  wrap.addEventListener('scroll', () => { pause(); resumeSoon(); }, { passive: true });
+}
+
 // Google-style reviews. Replace with Google Places API in production.
 const GOOGLE_REVIEWS = [
   { name: 'Carlos Mendoza', initial: 'C', color: '#4285f4', stars: 5, when: 'hace 2 semanas', text: 'El corte más bacán que me han dado en Guayaquil. El café mientras esperas es un plus enorme. Equipo de primer nivel, vayan sin pensarlo.', sede: 'Urdesa' },
@@ -1682,13 +1748,19 @@ const GOOGLE_REVIEWS = [
   const track = document.getElementById('mq-a');
   if (!track) return;
   const doubled = [...MARQUEE, ...MARQUEE];
-  doubled.forEach(src => {
+  doubled.forEach((src, i) => {
     const item = document.createElement('div');
     item.className = 'marquee-item interactive';
-    item.innerHTML = `<img src="${src}" alt="" loading="lazy"/>`;
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    if (i < MARQUEE.length) img.fetchPriority = 'high';
+    prepareReliableImage(img);
+    item.appendChild(img);
     track.appendChild(item);
   });
 })();
+enableTouchCarousel('.marquee-row', '#mq-a');
 
 // Service tabs
 const tabsEl = document.getElementById('services-tabs');
@@ -1716,7 +1788,16 @@ function selectService(i) {
   countEl.textContent = g.items.length + ' servicios';
   // Image fade
   imgEl.style.opacity = '0';
-  setTimeout(() => { imgEl.src = g.img; imgEl.style.opacity = '1'; }, 200);
+  const nextImg = new Image();
+  nextImg.onload = () => {
+    imgEl.src = g.img;
+    imgEl.style.opacity = '1';
+  };
+  nextImg.onerror = () => {
+    imgEl.src = IMAGE_FALLBACK;
+    imgEl.style.opacity = '1';
+  };
+  nextImg.src = g.img;
   // Items rebuild with stagger
   itemsEl.innerHTML = '';
   g.items.forEach((it, k) => {
@@ -1895,8 +1976,12 @@ doubled.forEach((v, i) => {
     <div class="social-platform">${badgeHtml}</div>
     <div class="social-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
     <div class="social-meta"><div class="social-title">${v.title}</div><div class="social-cat">${v.cat}</div></div>`;
+  const thumbImg = card.querySelector('img');
+  if (thumbImg && i < SOCIAL_VIDEOS.length) thumbImg.fetchPriority = 'high';
+  prepareReliableImage(thumbImg);
   socialTrackEl.appendChild(card);
 });
+enableTouchCarousel('.social-strip-wrap', '#social-track');
 
 // Live update — fetch real TikTok thumbnails via oEmbed
 SOCIAL_VIDEOS.forEach((v, i) => {
